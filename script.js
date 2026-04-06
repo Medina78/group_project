@@ -1,35 +1,15 @@
-<<<<<<< HEAD
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.querySelector(".nav-links");
+const navItems = document.querySelectorAll(".nav-links li");
 
-    const hamburger = document.getElementById('hamburger');
-    const navbarMenu = document.getElementById('navbar-menu');
-    
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navbarMenu.classList.toggle('active');
-    });
+menuToggle.addEventListener("click", () => {
+  navLinks.classList.toggle("active");
+});
 
-    const navLinks = navbarMenu.querySelectorAll('a');
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navbarMenu.classList.remove('active');
-        });
-=======
-    // Hamburger Menu Toggle
-    const hamburger = document.getElementById('hamburger');
-    const navbarMenu = document.getElementById('navbar-menu');
-    
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navbarMenu.classList.toggle('active');
-    });
-    
-    // Close menu when a link is clicked
-    const navLinks = navbarMenu.querySelectorAll('a');
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navbarMenu.classList.remove('active');
-        });
->>>>>>> a81fb94af08bd44acd2a1bdd564039041bf71981
-    });
+navItems.forEach(item => {
+  item.addEventListener("click", () => {
+    document.querySelector(".nav-links li.active")?.classList.remove("active");
+    item.classList.add("active");
+    navLinks.classList.remove("active");
+  });
+});

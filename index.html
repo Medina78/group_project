@@ -3,58 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Productivity</title>
-    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Commons-emblem-question_book_orange.svg/1280px-Commons-emblem-question_book_orange.svg.png">>
-    <link rel="stylesheet" href="style.css">
+    <title>StudyFlow</title>
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Commons-emblem-question_book_orange.svg/1280px-Commons-emblem-question_book_orange.svg.png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="#" class="navbar-logo">Student Productivity</a>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <ul class="navbar-menu" id="navbar-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="#">Features</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Welcome To Student Productivity</h1>
-            <p>Unlock Your Academic Potential Today</p>
-            <button class="hero-button">Get Started Now</button>
-        </div>
-    </section>
+<nav class="navbar">
+    <div class="logo">StudyFlow</div>
 
-    <h3>This app helps you with:</h3>
+    <ul class="nav-links">
+        <li class="active">Dashboard</li>
+        <li>Tasks</li>
+        <li>AI Assistant</li>
+        <li>Calendar</li>
+        <li>Notes</li>
+        <li>Settings</li>
+    </ul>
 
-    <div class="cards-container">
-        <div class="card">
-            <div class="card-icon">✅</div>
-            <h2>Task Management</h2>
-            <p>Organize your assignments and deadlines with our intuitive task management system.</p>
-        </div>
-        <div class="card">
-            <div class="card-icon">📚</div>
-            <h2>Study Planner</h2>
-            <p>Create personalized study schedules to maximize your productivity and achieve your academic goals.</p>
-        </div>
-        <div class="card">
-            <div class="card-icon">📈</div>
-            <h2>Progress Tracking</h2>
-            <p>Monitor your progress and stay motivated with our comprehensive tracking tools.</p>
-        </div>
-
+    <div class="menu-toggle" id="menuToggle">
+        ☰
     </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Boost Your Productivity</h1>
+        <p>Manage tasks, stay focused, and study smarter with AI.</p>
+    </div>
+</section>
 
 <script src="script.js"></script>
+
 </body>
 </html>
