@@ -10,6 +10,147 @@
 </head>
 <body>
 
+<div id="loginContainer" class="login-container">
+    <div class="login-box">
+        <div class="login-header">
+            <h1>StudyFlow</h1>
+            <p>Login to Your Account</p>
+        </div>
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <span class="error-message" id="emailError"></span>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <button type="button" class="password-toggle" id="passwordToggle" title="Show/Hide Password">
+                        <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <span class="error-message" id="passwordError"></span>
+                <div class="password-strength">
+                    <div class="strength-bar" id="strengthBar"></div>
+                </div>
+                <small id="strengthText"></small>
+            </div>
+
+            <div class="form-group remember-me">
+                <input type="checkbox" id="rememberMe" name="rememberMe">
+                <label for="rememberMe">Remember me</label>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">Login</button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <div class="auth-links">
+            <a href="#" id="forgotPasswordLink" class="auth-link forgot-link">Forgot Password?</a>
+            <span class="link-separator">•</span>
+            <a href="#" id="signupLink" class="auth-link signup-link">Sign Up</a>
+        </div>
+        
+        <div class="login-footer">
+            <p>Don't have an account? <a href="#" id="signupLink2">Create one now</a></p>
+        </div>
+    </div>
+</div>
+
+<div id="forgotPasswordModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>Reset Password</h2>
+            <button class="close-btn" id="closeForgotModal">&times;</button>
+        </div>
+        <form id="forgotPasswordForm" class="modal-form">
+            <p class="modal-description">Enter your email address and we'll send you a link to reset your password.</p>
+            <div class="form-group">
+                <label for="forgotEmail">Email Address</label>
+                <input type="email" id="forgotEmail" name="forgotEmail" placeholder="your@email.com" required>
+                <span class="error-message" id="forgotEmailError"></span>
+            </div>
+            <button type="submit" class="modal-btn">Send Reset Link</button>
+            <button type="button" class="modal-btn-secondary" id="cancelForgot">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<div id="signupModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>Create Account</h2>
+            <button class="close-btn" id="closeSignupModal">&times;</button>
+        </div>
+        <form id="signupForm" class="modal-form">
+            <div class="form-group">
+                <label for="signupName">Full Name</label>
+                <input type="text" id="signupName" name="signupName" placeholder="Your Full Name" required>
+                <span class="error-message" id="signupNameError"></span>
+            </div>
+            <div class="form-group">
+                <label for="signupEmail">Email Address</label>
+                <input type="email" id="signupEmail" name="signupEmail" placeholder="your@email.com" required>
+                <span class="error-message" id="signupEmailError"></span>
+            </div>
+            <div class="form-group">
+                <label for="signupPassword">Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="signupPassword" name="signupPassword" placeholder="Create a strong password" required>
+                    <button type="button" class="password-toggle" id="signupPasswordToggle" title="Show/Hide Password">
+                        <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <span class="error-message" id="signupPasswordError"></span>
+                <div class="password-strength">
+                    <div class="strength-bar" id="signupStrengthBar"></div>
+                </div>
+                <small id="signupStrengthText"></small>
+            </div>
+            <div class="form-group">
+                <label for="signupConfirmPassword">Confirm Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="signupConfirmPassword" name="signupConfirmPassword" placeholder="Confirm your password" required>
+                    <button type="button" class="password-toggle" id="signupConfirmPasswordToggle" title="Show/Hide Password">
+                        <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <span class="error-message" id="signupConfirmError"></span>
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                <label for="agreeTerms">I agree to the Terms of Service and Privacy Policy</label>
+                <span class="error-message" id="termsError"></span>
+            </div>
+            <button type="submit" class="modal-btn" id="signupBtn">Create Account</button>
+            <button type="button" class="modal-btn-secondary" id="cancelSignup">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<div id="successNotification" class="success-notification">
+    <div class="notification-content">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span id="notificationMessage"></span>
+    </div>
+</div>
+
+<div id="dashboardContainer" class="dashboard-container" style="display: none;">
+
 <nav class="navbar">
     <div class="logo">StudyFlow</div>
 
@@ -22,8 +163,9 @@
         <a href="settings.html"><li>Settings</li></a>
     </ul>
 
-    <div class="menu-toggle" id="menuToggle">
-        ☰
+    <div class="nav-right">
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+        <div class="menu-toggle" id="menuToggle">☰</div>
     </div>
 </nav>
 
@@ -60,6 +202,8 @@
         </article>
     </div>
 </section>
+
+</div>
 
 <script src="script.js"></script>
 
