@@ -44,6 +44,120 @@ function showNotification(message) {
   }, 3500);
 }
 
+const defaultApiEndpoint = "https://api.example.com/ai";
+const defaultApiKey = "";
+
+const aiMessages = document.getElementById("aiMessages");
+const aiChatForm = document.getElementById("aiChatForm");
+const aiPromptInput = document.getElementById("aiPromptInput");
+const aiSendBtn = document.getElementById("aiSendBtn");
+const apiEndpointInput = document.getElementById("apiEndpoint");
+const apiKeyInput = document.getElementById("apiKey");
+const saveApiBtn = document.getElementById("saveApiBtn");
+const apiStatusText = document.getElementById("apiStatusText");
+
+function updateApiStatus() {
+  if (!apiStatusText) return;
+  const savedEndpoint = localStorage.getItem("apiEndpoint");
+  const currentEndpoint = (apiEndpointInput?.value || savedEndpoint || defaultApiEndpoint).trim();
+  apiStatusText.textContent = `Current endpoint: ${currentEndpoint}`;
+}
+
+function initializeAiSettings() {
+  if (apiEndpointInput) {
+    apiEndpointInput.value = localStorage.getItem("apiEndpoint") || defaultApiEndpoint;
+  }
+  if (apiKeyInput) {
+    apiKeyInput.value = localStorage.getItem("apiKey") || defaultApiKey;
+  }
+  updateApiStatus();
+}
+
+function saveApiSettings() {
+  if (apiEndpointInput) {
+    localStorage.setItem("apiEndpoint", apiEndpointInput.value.trim());
+  }
+  if (apiKeyInput) {
+    localStorage.setItem("apiKey", apiKeyInput.value.trim());
+  }
+  updateApiStatus();
+  showNotification("AI API settings saved.");
+}
+
+function appendChatMessage(role, message) {
+  if (!aiMessages) return;
+
+  const bubble = document.createElement("div");
+  bubble.className = `message ${role === "user" ? "user" : "assistant"}`;
+  bubble.innerHTML = message
+    .split("\n")
+    .map(line => `<p>${line}</p>`)
+    .join("");
+
+  aiMessages.appendChild(bubble);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+}
+
+async function fetchAiResponse(prompt) {
+  const endpoint = (apiEndpointInput?.value || localStorage.getItem("apiEndpoint") || defaultApiEndpoint).trim();
+  const apiKey = (apiKeyInput?.value || localStorage.getItem("apiKey") || defaultApiKey).trim();
+
+  if (!endpoint || endpoint === defaultApiEndpoint) {
+    throw new Error("Please configure a valid AI API endpoint before sending a prompt.");
+  }
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  if (apiKey) {
+    headers.Authorization = `Bearer ${apiKey}`;
+  }
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      prompt,
+      user: localStorage.getItem("userEmail") || "guest",
+      timestamp: new Date().toISOString(),
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`AI API request failed (${response.status}): ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.answer || data.response || data.text || data.result || JSON.stringify(data);
+}
+
+function setLoadingState(isLoading) {
+  if (!aiSendBtn) return;
+  aiSendBtn.disabled = isLoading;
+  aiSendBtn.textContent = isLoading ? "Sending..." : "Send";
+}
+
+async function handleAiChatSubmit(event) {
+  event.preventDefault();
+  if (!aiPromptInput || !aiPromptInput.value.trim()) return;
+
+  const prompt = aiPromptInput.value.trim();
+  appendChatMessage("user", prompt);
+  aiPromptInput.value = "";
+  setLoadingState(true);
+
+  try {
+    const reply = await fetchAiResponse(prompt);
+    appendChatMessage("assistant", reply);
+  } catch (error) {
+    appendChatMessage("assistant", `Error: ${error.message}`);
+    showNotification("Unable to reach AI API. Check your endpoint and key.");
+  } finally {
+    setLoadingState(false);
+  }
+}
+
 function closeAllModals() {
   forgotPasswordModal.classList.remove("active");
   signupModal.classList.remove("active");
@@ -363,6 +477,14 @@ window.addEventListener("load", () => {
   if (isLoggedIn === "true") {
     loginContainer.style.display = "none";
     dashboardContainer.style.display = "block";
+  }
+
+  initializeAiSettings();
+  if (aiChatForm) {
+    aiChatForm.addEventListener("submit", handleAiChatSubmit);
+  }
+  if (saveApiBtn) {
+    saveApiBtn.addEventListener("click", saveApiSettings);
   }
 });
 

@@ -13,14 +13,61 @@
         <div class="logo">StudyFlow</div>
 
         <ul class="nav-links">
-            <li>Dashboard</li>
-            <li>Tasks</li>
-            <li class="active">AI Assistant</li>
-            <li>Calendar</li>
-            <li>Notes</li>
-            <li>Settings</li>
+            <a href="index.html"><li>Dashboard</li></a>
+            <a href="tasks.html"><li>Tasks</li></a>
+            <a href="ai-assistant.html"><li class="active">AI Assistant</li></a>
+            <a href="calendar.html"><li>Calendar</li></a>
+            <a href="notes.html"><li>Notes</li></a>
+            <a href="settings.html"><li>Settings</li></a>
         </ul>
 
         <div class="menu-toggle" id="menuToggle">
             ☰
         </div>
+    </nav>
+
+    <main class="assistant-page">
+        <section class="assistant-hero">
+            <div class="hero-tag">AI Assistant</div>
+            <h1>Ask questions. Get instant study help.</h1>
+            <p>Connect your assistant to an AI API endpoint and send prompts directly from this page.</p>
+        </section>
+
+        <section class="assistant-panel">
+            <div class="card assistant-settings">
+                <h2>API Settings</h2>
+                <p>Configure the endpoint and key for your AI service. Save settings to reuse them in future sessions.</p>
+                <form id="apiSettingsForm" class="api-settings">
+                    <div class="form-group">
+                        <label for="apiEndpoint">API Endpoint</label>
+                        <input type="url" id="apiEndpoint" placeholder="https://api.example.com/ai">
+                    </div>
+                    <div class="form-group">
+                        <label for="apiKey">API Key</label>
+                        <input type="text" id="apiKey" placeholder="Enter your API key">
+                    </div>
+                    <button type="button" class="save-api-btn" id="saveApiBtn">Save API Settings</button>
+                    <small id="apiStatusText">Enter your endpoint and save to enable AI requests.</small>
+                </form>
+            </div>
+
+            <div class="card assistant-chat">
+                <div class="chat-header">
+                    <h2>Chat with AI</h2>
+                </div>
+                <div id="aiMessages" class="chat-messages">
+                    <div class="message assistant">
+                        Hi there! Set your API endpoint, then ask a question to begin.
+                    </div>
+                </div>
+                <form id="aiChatForm" class="chat-form">
+                    <textarea id="aiPromptInput" placeholder="Ask anything about your schedule, study topics, or tasks..." required></textarea>
+                    <button type="submit" id="aiSendBtn" class="chat-send-btn">Send</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
