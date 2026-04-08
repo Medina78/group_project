@@ -30,10 +30,15 @@ const logoutBtn = document.getElementById("logoutBtn");
 const successNotification = document.getElementById("successNotification");
 const notificationMessage = document.getElementById("notificationMessage");
 
-// Password toggle elements
+
 const passwordToggle = document.getElementById("passwordToggle");
 const signupPasswordToggle = document.getElementById("signupPasswordToggle");
 const signupConfirmPasswordToggle = document.getElementById("signupConfirmPasswordToggle");
+
+
+(function() {
+  emailjs.init("service_j7pfcp5");
+})();
 
 
 function showNotification(message) {
@@ -329,10 +334,22 @@ if (forgotPasswordForm) {
       return;
     }
     
-    showNotification("Password reset link sent to your email!");
-    forgotPasswordForm.reset();
-    forgotEmailError.style.display = "none";
-    forgotPasswordModal.classList.remove("active");
+    const templateParams = {
+      to_email: email,
+      reset_link: "https://yourdomain.com/reset-password?email=" + encodeURIComponent(email) // Replace with actual reset link
+    };
+    
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+      .then(function(response) {
+        console.log('SUCCESS!', response.status, response.text);
+        showNotification("Password reset link sent to your email!");
+        forgotPasswordForm.reset();
+        forgotEmailError.style.display = "none";
+        forgotPasswordModal.classList.remove("active");
+      }, function(error) {
+        console.log('FAILED...', error);
+        showNotification("Failed to send reset email. Please try again.");
+      });
   });
 }
 
@@ -537,18 +554,15 @@ function togglePasswordVisibility(inputElement, toggleButton) {
   });
 }
 
-// Login password toggle
 if (passwordToggle) {
   togglePasswordVisibility(passwordInput, passwordToggle);
 }
 
-// Signup password toggle
 if (signupPasswordToggle) {
   const signupPasswordInput = document.getElementById("signupPassword");
   togglePasswordVisibility(signupPasswordInput, signupPasswordToggle);
 }
 
-// Signup confirm password toggle
 if (signupConfirmPasswordToggle) {
   const signupConfirmPasswordInput = document.getElementById("signupConfirmPassword");
   togglePasswordVisibility(signupConfirmPasswordInput, signupConfirmPasswordToggle);
