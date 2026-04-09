@@ -336,7 +336,7 @@ if (forgotPasswordForm) {
     
     const templateParams = {
       to_email: email,
-      reset_link: "https://yourdomain.com/reset-password?email=" + encodeURIComponent(email) // Replace with actual reset link
+      reset_link: "https://yourdomain.com/reset-password?email=" + encodeURIComponent(email) 
     };
     
     emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
