@@ -4,6 +4,7 @@ const nameRegex = /^[a-zA-Z\s]{2,50}$/;
 
 const loginContainer = document.getElementById("loginContainer");
 const dashboardContainer = document.getElementById("dashboardContainer");
+
 const loginForm = document.getElementById("loginForm");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
@@ -511,7 +512,7 @@ if (logoutBtn) {
     e.preventDefault();
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userEmail");
-    loginContainer.style.display = "block";
+    loginContainer.style.display = "flex";
     dashboardContainer.style.display = "none";
     loginForm.reset();
     showNotification("Logged out successfully!");
