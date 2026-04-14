@@ -537,18 +537,15 @@ function togglePasswordVisibility(inputElement, toggleButton) {
   });
 }
 
-// Login password toggle
 if (passwordToggle) {
   togglePasswordVisibility(passwordInput, passwordToggle);
 }
 
-// Signup password toggle
 if (signupPasswordToggle) {
   const signupPasswordInput = document.getElementById("signupPassword");
   togglePasswordVisibility(signupPasswordInput, signupPasswordToggle);
 }
 
-// Signup confirm password toggle
 if (signupConfirmPasswordToggle) {
   const signupConfirmPasswordInput = document.getElementById("signupConfirmPassword");
   togglePasswordVisibility(signupConfirmPasswordInput, signupConfirmPasswordToggle);
