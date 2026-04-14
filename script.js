@@ -4,6 +4,7 @@ const nameRegex = /^[a-zA-Z\s]{2,50}$/;
 
 const loginContainer = document.getElementById("loginContainer");
 const dashboardContainer = document.getElementById("dashboardContainer");
+
 const loginForm = document.getElementById("loginForm");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
@@ -30,10 +31,15 @@ const logoutBtn = document.getElementById("logoutBtn");
 const successNotification = document.getElementById("successNotification");
 const notificationMessage = document.getElementById("notificationMessage");
 
-// Password toggle elements
+
 const passwordToggle = document.getElementById("passwordToggle");
 const signupPasswordToggle = document.getElementById("signupPasswordToggle");
 const signupConfirmPasswordToggle = document.getElementById("signupConfirmPasswordToggle");
+
+
+(function() {
+  emailjs.init("service_j7pfcp5");
+})();
 
 
 function showNotification(message) {
@@ -329,10 +335,22 @@ if (forgotPasswordForm) {
       return;
     }
     
-    showNotification("Password reset link sent to your email!");
-    forgotPasswordForm.reset();
-    forgotEmailError.style.display = "none";
-    forgotPasswordModal.classList.remove("active");
+    const templateParams = {
+      to_email: email,
+      reset_link: "https://yourdomain.com/reset-password?email=" + encodeURIComponent(email) 
+    };
+    
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+      .then(function(response) {
+        console.log('SUCCESS!', response.status, response.text);
+        showNotification("Password reset link sent to your email!");
+        forgotPasswordForm.reset();
+        forgotEmailError.style.display = "none";
+        forgotPasswordModal.classList.remove("active");
+      }, function(error) {
+        console.log('FAILED...', error);
+        showNotification("Failed to send reset email. Please try again.");
+      });
   });
 }
 
@@ -494,7 +512,7 @@ if (logoutBtn) {
     e.preventDefault();
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userEmail");
-    loginContainer.style.display = "block";
+    loginContainer.style.display = "flex";
     dashboardContainer.style.display = "none";
     loginForm.reset();
     showNotification("Logged out successfully!");
