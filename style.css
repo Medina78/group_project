@@ -1171,6 +1171,8 @@ body {
 .calendar-actions {
   display: flex;
   gap: 15px;
+  margin: 10px;
+  padding: 0%;
 }
 
 .action-btn {
@@ -1333,11 +1335,21 @@ body {
   white-space: nowrap;
 }
 
-.day-event.study { background: #28a745; }
-.day-event.exam { background: #dc3545; }
-.day-event.assignment { background: #ffc107; color: #212529; }
-.day-event.meeting { background: #17a2b8; }
-.day-event.other { background: #6c757d; }
+.day-event.study {
+   background: #28a745;
+}
+.day-event.exam {
+   background: #dc3545;
+}
+.day-event.assignment { 
+  background: #ffc107; color: #212529;
+}
+.day-event.meeting { 
+  background: #17a2b8; 
+}
+.day-event.other { 
+  background: #6c757d;
+}
 
 .more-events {
   font-size: 0.7rem;
