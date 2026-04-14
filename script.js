@@ -340,7 +340,7 @@ if (forgotPasswordForm) {
       reset_link: "https://yourdomain.com/reset-password?email=" + encodeURIComponent(email) 
     };
     
-    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+    emailjs.send('service_v67ylt8', 'template_g3wik17', templateParams)
       .then(function(response) {
         console.log('SUCCESS!', response.status, response.text);
         showNotification("Password reset link sent to your email!");
