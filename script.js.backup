@@ -31,11 +31,25 @@ const logoutBtn = document.getElementById("logoutBtn");
 const successNotification = document.getElementById("successNotification");
 const notificationMessage = document.getElementById("notificationMessage");
 
+
 const passwordToggle = document.getElementById("passwordToggle");
 const signupPasswordToggle = document.getElementById("signupPasswordToggle");
 const signupConfirmPasswordToggle = document.getElementById("signupConfirmPasswordToggle");
 
-// OpenAI API Configuration
+
+(function() {
+  emailjs.init("service_j7pfcp5");
+})();
+
+
+function showNotification(message) {
+  notificationMessage.textContent = message;
+  successNotification.classList.add("show");
+  setTimeout(() => {
+    successNotification.classList.remove("show");
+  }, 3500);
+}
+
 const OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
 const aiMessages = document.getElementById("aiMessages");
@@ -49,24 +63,11 @@ const apiStatusText = document.getElementById("apiStatusText");
 
 let conversationHistory = [];
 
-(function() {
-  emailjs.init("service_j7pfcp5");
-})();
-
-function showNotification(message) {
-  if (!notificationMessage || !successNotification) return;
-  notificationMessage.textContent = message;
-  successNotification.classList.add("show");
-  setTimeout(() => {
-    successNotification.classList.remove("show");
-  }, 3500);
-}
-
 function updateApiStatus() {
   if (!apiStatusText) return;
   const hasKey = localStorage.getItem("openaiApiKey");
   const model = localStorage.getItem("openaiModel") || "gpt-3.5-turbo";
-  apiStatusText.textContent = hasKey ? `? API Key saved | Model: ${model}` : "? No API key configured";
+  apiStatusText.textContent = hasKey ? `✓ API Key saved | Model: ${model}` : "⚠ No API key configured";
 }
 
 function initializeAiSettings() {
@@ -80,19 +81,14 @@ function initializeAiSettings() {
 }
 
 function saveApiSettings() {
-  if (!apiKeyInput?.value.trim()) {
-    showNotification("Please enter a valid API key.");
-    return;
+  if (apiEndpointInput) {
+    localStorage.setItem("apiEndpoint", apiEndpointInput.value.trim());
   }
-  
-  localStorage.setItem("openaiApiKey", apiKeyInput.value.trim());
-  
-  if (apiModelInput) {
-    localStorage.setItem("openaiModel", apiModelInput.value);
+  if (apiKeyInput) {
+    localStorage.setItem("apiKey", apiKeyInput.value.trim());
   }
-  
   updateApiStatus();
-  showNotification("OpenAI settings saved successfully!");
+  showNotification("AI API settings saved.");
 }
 
 function appendChatMessage(role, message) {
@@ -109,72 +105,38 @@ function appendChatMessage(role, message) {
   aiMessages.scrollTop = aiMessages.scrollHeight;
 }
 
-async function fetchAiResponse(userMessage) {
-  const apiKey = (apiKeyInput?.value || localStorage.getItem("openaiApiKey") || "").trim();
-  const model = (apiModelInput?.value || localStorage.getItem("openaiModel") || "gpt-3.5-turbo").trim();
+async function fetchAiResponse(prompt) {
+  const endpoint = (apiEndpointInput?.value || localStorage.getItem("apiEndpoint") || defaultApiEndpoint).trim();
+  const apiKey = (apiKeyInput?.value || localStorage.getItem("apiKey") || defaultApiKey).trim();
 
-  if (!apiKey) {
-    throw new Error("Please configure your OpenAI API key in the settings above.");
+  if (!endpoint || endpoint === defaultApiEndpoint) {
+    throw new Error("Please configure a valid AI API endpoint before sending a prompt.");
   }
 
-  if (!apiKey.startsWith("sk-")) {
-    throw new Error("Invalid API key format. OpenAI keys start with 'sk-'");
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  if (apiKey) {
+    headers.Authorization = `Bearer ${apiKey}`;
   }
 
-  // Add user message to conversation history
-  conversationHistory.push({
-    role: "user",
-    content: userMessage
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      prompt,
+      user: localStorage.getItem("userEmail") || "guest",
+      timestamp: new Date().toISOString(),
+    }),
   });
 
-  // Limit conversation history to last 10 messages for token efficiency
-  if (conversationHistory.length > 10) {
-    conversationHistory = conversationHistory.slice(-10);
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`AI API request failed (${response.status}): ${errorText}`);
   }
 
-  const requestBody = {
-    model: model,
-    messages: conversationHistory,
-    temperature: 0.7,
-    max_tokens: 1000
-  };
-
-  try {
-    const response = await fetch(OPENAI_API_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(requestBody)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      const errorMessage = errorData.error?.message || `API Error (${response.status})`;
-      throw new Error(errorMessage);
-    }
-
-    const data = await response.json();
-    const assistantMessage = data.choices[0]?.message?.content || "No response received";
-    
-    // Add assistant message to conversation history
-    conversationHistory.push({
-      role: "assistant",
-      content: assistantMessage
-    });
-
-    return assistantMessage;
-  } catch (error) {
-    if (error.message.includes("401")) {
-      throw new Error("Invalid API key. Check your OpenAI API key and try again.");
-    } else if (error.message.includes("429")) {
-      throw new Error("Rate limit exceeded. Please wait a moment and try again.");
-    } else if (error.message.includes("500")) {
-      throw new Error("OpenAI service is currently unavailable. Please try again later.");
-    }
-    throw error;
-  }
+  const data = await response.json();
+  return data.answer || data.response || data.text || data.result || JSON.stringify(data);
 }
 
 function setLoadingState(isLoading) {
@@ -187,27 +149,27 @@ async function handleAiChatSubmit(event) {
   event.preventDefault();
   if (!aiPromptInput || !aiPromptInput.value.trim()) return;
 
-  const userMessage = aiPromptInput.value.trim();
-  appendChatMessage("user", userMessage);
+  const prompt = aiPromptInput.value.trim();
+  appendChatMessage("user", prompt);
   aiPromptInput.value = "";
   setLoadingState(true);
 
   try {
-    const reply = await fetchAiResponse(userMessage);
+    const reply = await fetchAiResponse(prompt);
     appendChatMessage("assistant", reply);
   } catch (error) {
-    const errorMsg = error.message || "Unable to connect to OpenAI API.";
-    appendChatMessage("assistant", `?? Error: ${errorMsg}`);
-    showNotification("Failed to get AI response. Check your API key and settings.");
+    appendChatMessage("assistant", `Error: ${error.message}`);
+    showNotification("Unable to reach AI API. Check your endpoint and key.");
   } finally {
     setLoadingState(false);
   }
 }
 
 function closeAllModals() {
-  if (forgotPasswordModal) forgotPasswordModal.classList.remove("active");
-  if (signupModal) signupModal.classList.remove("active");
+  forgotPasswordModal.classList.remove("active");
+  signupModal.classList.remove("active");
 }
+
 
 function validateEmail(email, errorElement = emailError) {
   const cleanEmail = email.trim();
@@ -222,6 +184,7 @@ function validateEmail(email, errorElement = emailError) {
   
   return isValid;
 }
+
 
 function validatePassword(password) {
   const isValid = passwordRegex.test(password);
@@ -257,6 +220,7 @@ function checkPasswordStrength(password, strengthBarElement, strengthTextElement
   }
 }
 
+
 if (emailInput) {
   emailInput.addEventListener("blur", () => {
     if (emailInput.value) {
@@ -290,6 +254,7 @@ if (loginForm) {
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     
+    
     if (!email) {
       emailError.textContent = "Email is required";
       emailError.style.display = "block";
@@ -304,6 +269,7 @@ if (loginForm) {
     const passwordValid = validatePassword(password);
     
     if (emailValid && passwordValid) {
+      
       showNotification("Login successful! Welcome back.");
       
       setTimeout(() => {
@@ -320,6 +286,7 @@ if (loginForm) {
     }
   });
 }
+
 
 if (forgotPasswordLink) {
   forgotPasswordLink.addEventListener("click", (e) => {
@@ -387,6 +354,7 @@ if (forgotPasswordForm) {
       });
   });
 }
+
 
 if (signupLink) {
   signupLink.addEventListener("click", (e) => {
@@ -513,6 +481,7 @@ if (signupForm) {
     }
 
     if (isValid) {
+
       showNotification("Account created successfully! You can now login.");
       signupForm.reset();
       signupStrengthBar.style.width = "0%";
@@ -537,6 +506,7 @@ window.addEventListener("load", () => {
     saveApiBtn.addEventListener("click", saveApiSettings);
   }
 });
+
 
 if (logoutBtn) {
   logoutBtn.addEventListener("click", (e) => {
