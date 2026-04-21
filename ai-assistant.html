@@ -37,18 +37,23 @@
         <section class="assistant-panel">
             <div class="card assistant-settings">
                 <h2>API Settings</h2>
-                <p>Configure the endpoint and key for your AI service. Save settings to reuse them in future sessions.</p>
+                <p>Add your OpenAI API key to start chatting with AI. Your key is stored locally and never sent to our servers.</p>
                 <form id="apiSettingsForm" class="api-settings">
                     <div class="form-group">
-                        <label for="apiEndpoint">API Endpoint</label>
-                        <input type="url" id="apiEndpoint" placeholder="https://api.example.com/ai">
+                        <label for="apiKey">OpenAI API Key</label>
+                        <input type="password" id="apiKey" placeholder="sk-...">
+                        <small>Get your key from <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a></small>
                     </div>
                     <div class="form-group">
-                        <label for="apiKey">API Key</label>
-                        <input type="text" id="apiKey" placeholder="Enter your API key">
+                        <label for="apiModel">Model</label>
+                        <select id="apiModel">
+                            <option value="gpt-4">GPT-4 (Most capable)</option>
+                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                            <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo (Faster)</option>
+                        </select>
                     </div>
-                    <button type="button" class="save-api-btn" id="saveApiBtn">Save API Settings</button>
-                    <small id="apiStatusText">Enter your endpoint and save to enable AI requests.</small>
+                    <button type="button" class="save-api-btn" id="saveApiBtn">Save Settings</button>
+                    <small id="apiStatusText">Ready to chat!</small>
                 </form>
             </div>
 
@@ -58,7 +63,7 @@
                 </div>
                 <div id="aiMessages" class="chat-messages">
                     <div class="message assistant">
-                        Hi there! Set your API endpoint, then ask a question to begin.
+                        👋 Welcome! Add your OpenAI API key above to start chatting with AI. Your key is stored safely in your browser.
                     </div>
                 </div>
                 <form id="aiChatForm" class="chat-form">
