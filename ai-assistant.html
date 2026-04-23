@@ -31,25 +31,20 @@
         <section class="assistant-hero">
             <div class="hero-tag">AI Assistant</div>
             <h1>Ask questions. Get instant study help.</h1>
-            <p>Connect your assistant to an AI API endpoint and send prompts directly from this page.</p>
+            <p>Use our free AI assistant powered by open-source models to get help with your studies.</p>
         </section>
 
         <section class="assistant-panel">
             <div class="card assistant-settings">
-                <h2>API Settings</h2>
-                <p>Add your OpenAI API key to start chatting with AI. Your key is stored locally and never sent to our servers.</p>
+                <h2>AI Settings</h2>
+                <p>Choose your preferred AI model for generating responses. All models are free to use.</p>
                 <form id="apiSettingsForm" class="api-settings">
-                    <div class="form-group">
-                        <label for="apiKey">OpenAI API Key</label>
-                        <input type="password" id="apiKey" placeholder="sk-...">
-                        <small>Get your key from <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a></small>
-                    </div>
                     <div class="form-group">
                         <label for="apiModel">Model</label>
                         <select id="apiModel">
-                            <option value="gpt-4">GPT-4 (Most capable)</option>
-                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                            <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo (Faster)</option>
+                            <option value="gpt2">GPT-2 (Fast)</option>
+                            <option value="distilgpt2" selected>DistilGPT-2 (Faster)</option>
+                            <option value="microsoft/DialoGPT-medium">DialoGPT (Conversational)</option>
                         </select>
                     </div>
                     <button type="button" class="save-api-btn" id="saveApiBtn">Save Settings</button>
@@ -63,7 +58,7 @@
                 </div>
                 <div id="aiMessages" class="chat-messages">
                     <div class="message assistant">
-                        👋 Welcome! Add your OpenAI API key above to start chatting with AI. Your key is stored safely in your browser.
+                        👋 Welcome! Start chatting with our free AI assistant. No API key required!
                     </div>
                 </div>
                 <form id="aiChatForm" class="chat-form">

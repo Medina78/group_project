@@ -35,14 +35,12 @@ const passwordToggle = document.getElementById("passwordToggle");
 const signupPasswordToggle = document.getElementById("signupPasswordToggle");
 const signupConfirmPasswordToggle = document.getElementById("signupConfirmPasswordToggle");
 
-// OpenAI API Configuration
-const OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+const HF_API_BASE = "https://api-inference.huggingface.co/models";
 
 const aiMessages = document.getElementById("aiMessages");
 const aiChatForm = document.getElementById("aiChatForm");
 const aiPromptInput = document.getElementById("aiPromptInput");
 const aiSendBtn = document.getElementById("aiSendBtn");
-const apiKeyInput = document.getElementById("apiKey");
 const apiModelInput = document.getElementById("apiModel");
 const saveApiBtn = document.getElementById("saveApiBtn");
 const apiStatusText = document.getElementById("apiStatusText");
@@ -64,35 +62,30 @@ function showNotification(message) {
 
 function updateApiStatus() {
   if (!apiStatusText) return;
-  const hasKey = localStorage.getItem("openaiApiKey");
-  const model = localStorage.getItem("openaiModel") || "gpt-3.5-turbo";
-  apiStatusText.textContent = hasKey ? `? API Key saved | Model: ${model}` : "? No API key configured";
+  const model = localStorage.getItem("aiModel") || "distilgpt2";
+  apiStatusText.textContent = `? Model: ${model}`;
 }
 
 function initializeAiSettings() {
-  if (apiKeyInput) {
-    apiKeyInput.value = localStorage.getItem("openaiApiKey") || "";
-  }
   if (apiModelInput) {
-    apiModelInput.value = localStorage.getItem("openaiModel") || "gpt-3.5-turbo";
+    apiModelInput.value = localStorage.getItem("aiModel") || "distilgpt2";
   }
   updateApiStatus();
 }
 
 function saveApiSettings() {
-  if (!apiKeyInput?.value.trim()) {
-    showNotification("Please enter a valid API key.");
-    return;
-  }
-  
-  localStorage.setItem("openaiApiKey", apiKeyInput.value.trim());
-  
   if (apiModelInput) {
-    localStorage.setItem("openaiModel", apiModelInput.value);
+    localStorage.setItem("aiModel", apiModelInput.value);
   }
   
   updateApiStatus();
-  showNotification("OpenAI settings saved successfully!");
+  showNotification("AI settings saved successfully!");
+}
+
+function setLoadingState(isLoading) {
+  if (!aiSendBtn) return;
+  aiSendBtn.disabled = isLoading;
+  aiSendBtn.textContent = isLoading ? "Sending..." : "Send";
 }
 
 function appendChatMessage(role, message) {
@@ -110,55 +103,61 @@ function appendChatMessage(role, message) {
 }
 
 async function fetchAiResponse(userMessage) {
-  const apiKey = (apiKeyInput?.value || localStorage.getItem("openaiApiKey") || "").trim();
-  const model = (apiModelInput?.value || localStorage.getItem("openaiModel") || "gpt-3.5-turbo").trim();
+  const model = (apiModelInput?.value || localStorage.getItem("aiModel") || "distilgpt2").trim();
 
-  if (!apiKey) {
-    throw new Error("Please configure your OpenAI API key in the settings above.");
-  }
-
-  if (!apiKey.startsWith("sk-")) {
-    throw new Error("Invalid API key format. OpenAI keys start with 'sk-'");
-  }
-
-  // Add user message to conversation history
   conversationHistory.push({
     role: "user",
     content: userMessage
   });
 
-  // Limit conversation history to last 10 messages for token efficiency
-  if (conversationHistory.length > 10) {
-    conversationHistory = conversationHistory.slice(-10);
+  if (conversationHistory.length > 5) {
+    conversationHistory = conversationHistory.slice(-5);
   }
 
+  const prompt = conversationHistory.map(msg => 
+    msg.role === "user" ? `User: ${msg.content}` : `Assistant: ${msg.content}`
+  ).join("\n") + "\nAssistant:";
+
   const requestBody = {
-    model: model,
-    messages: conversationHistory,
-    temperature: 0.7,
-    max_tokens: 1000
+    inputs: prompt,
+    parameters: {
+      max_new_tokens: 150,
+      temperature: 0.7,
+      do_sample: true,
+      return_full_text: false
+    }
   };
 
   try {
-    const response = await fetch(OPENAI_API_ENDPOINT, {
+    const response = await fetch(`${HF_API_BASE}/${model}`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      const errorMessage = errorData.error?.message || `API Error (${response.status})`;
+      const errorMessage = errorData.error || `API Error (${response.status})`;
       throw new Error(errorMessage);
     }
 
     const data = await response.json();
-    const assistantMessage = data.choices[0]?.message?.content || "No response received";
-    
-    // Add assistant message to conversation history
+    let assistantMessage = "";
+
+    if (Array.isArray(data) && data[0]?.generated_text) {
+      assistantMessage = data[0].generated_text.trim();
+    } else if (data.generated_text) {
+      assistantMessage = data.generated_text.trim();
+    } else {
+      assistantMessage = "No response received";
+    }
+
+    if (assistantMessage.startsWith(prompt)) {
+      assistantMessage = assistantMessage.substring(prompt.length).trim();
+    }
+
     conversationHistory.push({
       role: "assistant",
       content: assistantMessage
@@ -166,21 +165,15 @@ async function fetchAiResponse(userMessage) {
 
     return assistantMessage;
   } catch (error) {
-    if (error.message.includes("401")) {
-      throw new Error("Invalid API key. Check your OpenAI API key and try again.");
-    } else if (error.message.includes("429")) {
+    if (error.message.includes("429")) {
       throw new Error("Rate limit exceeded. Please wait a moment and try again.");
+    } else if (error.message.includes("503")) {
+      throw new Error("Model is currently loading. Please try again in a few seconds.");
     } else if (error.message.includes("500")) {
-      throw new Error("OpenAI service is currently unavailable. Please try again later.");
+      throw new Error("AI service is currently unavailable. Please try again later.");
     }
     throw error;
   }
-}
-
-function setLoadingState(isLoading) {
-  if (!aiSendBtn) return;
-  aiSendBtn.disabled = isLoading;
-  aiSendBtn.textContent = isLoading ? "Sending..." : "Send";
 }
 
 async function handleAiChatSubmit(event) {
@@ -196,9 +189,9 @@ async function handleAiChatSubmit(event) {
     const reply = await fetchAiResponse(userMessage);
     appendChatMessage("assistant", reply);
   } catch (error) {
-    const errorMsg = error.message || "Unable to connect to OpenAI API.";
+    const errorMsg = error.message || "Unable to connect to AI service.";
     appendChatMessage("assistant", `?? Error: ${errorMsg}`);
-    showNotification("Failed to get AI response. Check your API key and settings.");
+    showNotification("Failed to get AI response. Please try again.");
   } finally {
     setLoadingState(false);
   }
