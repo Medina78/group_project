@@ -704,36 +704,6 @@ body::before {
   margin: 0 auto;
 }
 
-.assistant-hero {
-  text-align: center;
-  margin-bottom: 36px;
-}
-
-.assistant-hero .hero-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 18px;
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: rgba(255, 126, 0, 0.12);
-  color: #ff7e00;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-.assistant-hero h1 {
-  font-size: clamp(2rem, 3vw, 3.2rem);
-  margin-bottom: 14px;
-}
-
-.assistant-hero p {
-  color: #5f667c;
-  max-width: 720px;
-  margin: 0 auto;
-  line-height: 1.75;
-}
-
 .assistant-panel {
   display: grid;
   grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
@@ -1074,6 +1044,7 @@ body::before {
   z-index: 1;
   animation: fadeInUp 1.2s ease both;
   transform: translateZ(0);
+  width: 100%;
 }
 
 .hero-tag {
@@ -1116,6 +1087,7 @@ body::before {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   position: relative;
+  width: 100%;
 }
 
 .hero-content h1::after {
