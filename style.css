@@ -3070,5 +3070,6 @@ body {
 
   .calendar-day, .week-day-column, .time-slot {
     break-inside: avoid;
+
   }
 }
