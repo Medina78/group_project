@@ -143,23 +143,163 @@ function generateAiResponse(prompt, model) {
     : 'Answer clearly with helpful next steps.';
 
   let response = '';
+  const questionWords = ['what', 'how', 'why', 'when', 'where', 'who', 'which', 'can', 'should', 'does', 'do'];
+  const isQuestion = normalized.endsWith('?') || questionWords.some(word => lower.startsWith(word + ' '));
 
-  if (lower.includes('summar') || lower.includes('outline')) {
+  if (lower.includes('what is photosynthesis') || lower.includes('photosynthesis')) {
+    response = `${label} answer: Photosynthesis is the process plants and some bacteria use to turn sunlight, water, and carbon dioxide into energy and oxygen.`;
+  } else if (lower.includes('what is gravity') || lower.includes('gravity')) {
+    response = `${label} answer: Gravity is the force that attracts objects toward the center of Earth or any other physical body with mass. It's what keeps us grounded and makes things fall.`;
+  } else if (lower.includes('what is') && lower.includes('cell')) {
+    response = `${label} answer: A cell is the basic structural and functional unit of all living organisms. Plant cells have cell walls, while animal cells do not.`;
+  } else if (lower.includes('what is') && lower.includes('atom')) {
+    response = `${label} answer: An atom is the smallest unit of matter that retains the properties of an element. It consists of protons, neutrons, and electrons.`;
+  } else if (lower.includes('what is algebra') || lower.includes('algebra')) {
+    response = `${label} answer: Algebra is a branch of mathematics that deals with symbols and the rules for manipulating those symbols to solve equations and understand relationships.`;
+  } else if (lower.includes('what is calculus') || lower.includes('calculus')) {
+    response = `${label} answer: Calculus is the mathematical study of continuous change, dealing with derivatives (rates of change) and integrals (accumulation of quantities).`;
+  } else if (lower.includes('what is pi') || lower.includes('pi')) {
+    response = `${label} answer: Pi (π) is a mathematical constant approximately equal to 3.14159, representing the ratio of a circle's circumference to its diameter.`;
+  } else if (lower.includes('what is the civil war') || lower.includes('civil war')) {
+    response = `${label} answer: The American Civil War (1861-1865) was fought between the Northern states (Union) and Southern states (Confederacy) primarily over slavery and states' rights.`;
+  } else if (lower.includes('who was abraham lincoln') || lower.includes('abraham lincoln')) {
+    response = `${label} answer: Abraham Lincoln was the 16th President of the United States, serving from 1861 to 1865. He led the nation through the Civil War and issued the Emancipation Proclamation.`;
+  } else if (lower.includes('what is shakespeare') || lower.includes('shakespeare')) {
+    response = `${label} answer: William Shakespeare was an English playwright, poet, and actor, widely regarded as the greatest writer in the English language and the world's pre-eminent dramatist.`;
+  } else if (lower.includes('what is a sonnet') || lower.includes('sonnet')) {
+    response = `${label} answer: A sonnet is a 14-line poem with a specific rhyme scheme, often written in iambic pentameter, commonly used to express themes of love, beauty, or mortality.`;
+  } else if (lower.includes('what is a continent') || lower.includes('continent')) {
+    response = `${label} answer: A continent is one of the seven large landmasses on Earth: Africa, Antarctica, Asia, Europe, North America, Australia (Oceania), and South America.`;
+  } else if (lower.includes('what is the capital of france') || lower.includes('capital of france')) {
+    response = `${label} answer: The capital of France is Paris, a major European city known for its art, fashion, gastronomy, and culture.`;
+  } else if (lower.includes('what is a verb') || lower.includes('verb')) {
+    response = `${label} answer: A verb is a word that expresses an action, occurrence, or state of being. Examples include run, think, and exist.`;
+  } else if (lower.includes('what is grammar') || lower.includes('grammar')) {
+    response = `${label} answer: Grammar is the set of structural rules governing the composition of clauses, phrases, and words in a language, including syntax and morphology.`;
+  } else if (lower.includes('what is democracy') || lower.includes('democracy')) {
+    response = `${label} answer: Democracy is a system of government where the people have the power, typically through elected representatives, to make decisions affecting their lives.`;
+  } else if (lower.includes('what is the periodic table') || lower.includes('periodic table')) {
+    response = `${label} answer: The periodic table is a tabular arrangement of chemical elements, organized by atomic number, electron configuration, and recurring chemical properties.`;
+  } else if (lower.includes('what is evolution') || lower.includes('evolution')) {
+    response = `${label} answer: Evolution is the process by which species of organisms change over time through natural selection and genetic variation, leading to the development of new species.`;
+  } else if (lower.includes('what is the water cycle') || lower.includes('water cycle')) {
+    response = `${label} answer: The water cycle is the continuous movement of water on, above, and below the surface of the Earth, involving evaporation, condensation, precipitation, and runoff.`;
+  } else if (lower.includes('what is geometry') || lower.includes('geometry')) {
+    response = `${label} answer: Geometry is a branch of mathematics concerned with the properties and relations of points, lines, surfaces, solids, and higher dimensional analogs.`;
+  } else if (lower.includes('what is world war ii') || lower.includes('world war ii') || lower.includes('wwii')) {
+    response = `${label} answer: World War II (1939-1945) was a global war involving most of the world's nations, divided into the Allies and Axis powers, resulting in massive loss of life and significant geopolitical changes.`;
+  } else if (lower.includes('what is poetry') || lower.includes('poetry')) {
+    response = `${label} answer: Poetry is a form of literature that uses aesthetic and rhythmic qualities of language to evoke meanings in addition to, or in place of, the prosaic ostensible meaning.`;
+  } else if (lower.includes('what is climate change') || lower.includes('climate change')) {
+    response = `${label} answer: Climate change refers to long-term shifts in temperatures and weather patterns, primarily caused by human activities like burning fossil fuels, leading to global warming.`;
+  } else if (lower.includes('what is economics') || lower.includes('economics')) {
+    response = `${label} answer: Economics is the social science that studies how individuals, governments, firms, and nations make choices on allocating scarce resources to satisfy their unlimited wants.`;
+  } else if (lower.includes('what is psychology') || lower.includes('psychology')) {
+    response = `${label} answer: Psychology is the scientific study of the mind and behavior, exploring how people think, feel, and act individually and in groups.`;
+  } else if (lower.includes('what is') && (lower.includes('football') || lower.includes('soccer'))) {
+    response = `${label} answer: Football (or soccer) is a team sport played between two teams of eleven players each, who primarily use their feet to propel a ball around a rectangular field called a pitch.`;
+  } else if (lower.includes('what is') && lower.includes('basketball')) {
+    response = `${label} answer: Basketball is a team sport in which two teams, most commonly of five players each, opposing one another on a rectangular court, compete with the primary objective of shooting a basketball through the defender's hoop.`;
+  } else if (lower.includes('what is') && lower.includes('movie') || lower.includes('film')) {
+    response = `${label} answer: A movie or film is a form of visual storytelling that uses moving images and sound to convey stories, emotions, and ideas, typically shown in theaters or on screens.`;
+  } else if (lower.includes('what is') && lower.includes('music')) {
+    response = `${label} answer: Music is an art form and cultural activity whose medium is sound organized in time, combining pitch, rhythm, dynamics, and sonic qualities to create expressive compositions.`;
+  } else if (lower.includes('what is') && lower.includes('internet')) {
+    response = `${label} answer: The Internet is a global network of interconnected computer networks that use standardized communication protocols to link devices worldwide, enabling information sharing and communication.`;
+  } else if (lower.includes('what is') && lower.includes('computer')) {
+    response = `${label} answer: A computer is an electronic device that can receive, store, process, and output data, performing calculations and executing programs according to instructions.`;
+  } else if (lower.includes('what is') && lower.includes('phone') || lower.includes('smartphone')) {
+    response = `${label} answer: A smartphone is a mobile phone that performs many of the functions of a computer, typically having a touchscreen interface, internet access, and an operating system capable of running downloaded apps.`;
+  } else if (lower.includes('what is') && lower.includes('food') || lower.includes('cooking')) {
+    response = `${label} answer: Cooking is the art and science of preparing food for consumption, involving various techniques like baking, boiling, frying, and grilling to make ingredients edible and flavorful.`;
+  } else if (lower.includes('what is') && lower.includes('health') || lower.includes('healthy')) {
+    response = `${label} answer: Health refers to a state of complete physical, mental, and social well-being, not merely the absence of disease or infirmity, requiring balanced nutrition, exercise, and stress management.`;
+  } else if (lower.includes('what is') && lower.includes('travel')) {
+    response = `${label} answer: Travel is the movement of people between distant geographical locations for any purpose and any duration, from daily commuting to international tourism and exploration.`;
+  } else if (lower.includes('what is') && lower.includes('weather')) {
+    response = `${label} answer: Weather is the state of the atmosphere at a particular place and time, including temperature, precipitation, humidity, wind, and atmospheric pressure.`;
+  } else if (lower.includes('what is') && lower.includes('money') || lower.includes('currency')) {
+    response = `${label} answer: Money is any item or verifiable record that is generally accepted as payment for goods and services and repayment of debts, serving as a medium of exchange, unit of account, and store of value.`;
+  } else if (lower.includes('what is') && lower.includes('art')) {
+    response = `${label} answer: Art is a diverse range of human activities involving the creation of visual, auditory, or performing artifacts that express the creator's imagination, conceptual ideas, or technical skill.`;
+  } else if (lower.includes('what is') && lower.includes('sport') || lower.includes('sports')) {
+    response = `${label} answer: A sport is an activity involving physical exertion and skill in which an individual or team competes against another or others for entertainment, often governed by rules and regulations.`;
+  } else if (lower.includes('what is') && lower.includes('game')) {
+    response = `${label} answer: A game is a structured form of play, usually undertaken for enjoyment and sometimes used as an educational tool, involving rules, goals, and often competition between players.`;
+  } else if (lower.includes('what is') && lower.includes('book')) {
+    response = `${label} answer: A book is a medium for recording information in the form of writing or images, typically composed of many pages bound together and protected by a cover.`;
+  } else if (lower.includes('what is') && lower.includes('animal')) {
+    response = `${label} answer: An animal is a living organism that feeds on organic matter, typically having specialized sense organs and nervous system, and able to respond rapidly to stimuli.`;
+  } else if (lower.includes('what is') && lower.includes('plant')) {
+    response = `${label} answer: A plant is a living organism of the kingdom Plantae, typically producing its own food through photosynthesis and having cell walls made of cellulose.`;
+  } else if (lower.includes('what is') && lower.includes('color')) {
+    response = `${label} answer: Color is the characteristic of visual perception described through color categories, with names such as red, orange, yellow, green, blue, or purple, resulting from the way light interacts with matter.`;
+  } else if (lower.includes('what is') && lower.includes('time')) {
+    response = `${label} answer: Time is the indefinite continued progress of existence and events that occur in apparently irreversible succession from the past through the present to the future.`;
+  } else if (lower.includes('what is') && lower.includes('space')) {
+    response = `${label} answer: Space is the boundless three-dimensional extent in which objects and events have relative position and direction, encompassing the universe beyond Earth's atmosphere.`;
+  } else if (lower.includes('what is') && lower.includes('love')) {
+    response = `${label} answer: Love is a complex set of emotions, behaviors, and beliefs associated with strong feelings of affection, protectiveness, warmth, and respect for another person.`;
+  } else if (lower.includes('what is') && lower.includes('friendship')) {
+    response = `${label} answer: Friendship is a relationship of mutual affection between people, characterized by trust, support, loyalty, and shared interests and experiences.`;
+  } else if (lower.includes('what is') && lower.includes('happiness')) {
+    response = `${label} answer: Happiness is a mental or emotional state of well-being characterized by positive or pleasant emotions ranging from contentment to intense joy.`;
+  } else if (lower.includes('what is') && lower.includes('dream')) {
+    response = `${label} answer: A dream is a succession of images, ideas, emotions, and sensations that usually occur involuntarily in the mind during certain stages of sleep.`;
+  } else if (lower.includes('tell me a joke') || lower.includes('joke')) {
+    const jokes = [
+      "Why don't scientists trust atoms? Because they make up everything!",
+      "What do you call fake spaghetti? An impasta!",
+      "Why did the scarecrow win an award? Because he was outstanding in his field!",
+      "What do you get when you cross a snowman and a vampire? Frostbite!",
+      "Why don't eggs tell jokes? They'd crack each other up!"
+    ];
+    response = `${label} joke: ${jokes[Math.floor(Math.random() * jokes.length)]}`;
+  } else if (lower.includes('fun fact') || lower.includes('interesting fact')) {
+    const facts = [
+      "Octopuses have three hearts and blue blood.",
+      "A group of flamingos is called a 'flamboyance'.",
+      "Honey never spoils. Archaeologists have found pots of honey in ancient Egyptian tombs that are over 3,000 years old and still perfectly edible.",
+      "The shortest war in history was between Britain and Zanzibar in 1896, lasting only 38 minutes.",
+      "A bolt of lightning is five times hotter than the surface of the sun."
+    ];
+    response = `${label} fun fact: ${facts[Math.floor(Math.random() * facts.length)]}`;
+  } else if (lower.includes('how are you') || lower.includes('how do you do')) {
+    response = `${label} response: I'm doing great, thanks for asking! I'm here to help you with any questions you have. What can I assist you with today?`;
+  } else if (lower.includes('what can you do') || lower.includes('what are you')) {
+    response = `${label} answer: I'm an AI assistant that can answer questions on a wide variety of topics, provide information, tell jokes, share fun facts, and help with study-related tasks. Just ask me anything!`;
+  } else if (lower.includes('thank you') || lower.includes('thanks')) {
+    response = `${label} response: You're very welcome! I'm glad I could help. Feel free to ask me anything else anytime.`;
+  } else if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
+    response = `${label} greeting: Hello! Nice to meet you. How can I help you today?`;
+  } else if (lower.includes('bye') || lower.includes('goodbye') || lower.includes('see you')) {
+    response = `${label} farewell: Goodbye! It was great chatting with you. Come back anytime if you need help with anything!`;
+  } else if (lower.includes('summar') || lower.includes('outline')) {
     response = `${label} summary: Break the topic into three parts, highlight the main ideas, and write a short recap after each section.`;
   } else if (lower.includes('explain') || lower.includes('how') || lower.includes('why')) {
     response = `${label} explanation: Start with the core concept, use one example, and connect it back to your study goal.`;
-  } else if (lower.includes('what is')) {
-    if (lower.includes('photosynthesis')) {
-      response = `${label} answer: Photosynthesis is the process plants and some bacteria use to turn sunlight, water, and carbon dioxide into energy and oxygen.`;
-    } else {
-      response = `${label} answer: It is a concept that can be explained step by step. Start with the definition, then give one clear example.`;
-    }
   } else if (lower.includes('plan') || lower.includes('schedule') || lower.includes('deadline')) {
     response = `${label} plan: prioritize urgent items first, block focused study slots, and review progress at the end of each hour.`;
   } else if (lower.includes('quiz') || lower.includes('test') || lower.includes('exam')) {
     response = `${label} strategy: practice active recall, quiz yourself with flashcards, and revisit the hardest problems last.`;
+  } else if (isQuestion) {
+    const genericAnswers = [
+      `That's an interesting question! Let me think about it: ${normalized}. From what I know, this involves considering different perspectives and finding the most relevant information.`,
+      `Great question! Regarding ${normalized}, I'd say it depends on the context, but generally involves understanding the key components and their relationships.`,
+      `I love questions like this! For ${normalized}, the answer typically involves breaking it down into smaller parts and examining each element carefully.`,
+      `That's a thoughtful question. When it comes to ${normalized}, it's important to consider both the immediate factors and the broader implications.`,
+      `Excellent question! About ${normalized} - this is something that can be approached by gathering relevant information and analyzing the different aspects.`
+    ];
+    response = `${label} answer: ${genericAnswers[Math.floor(Math.random() * genericAnswers.length)]}`;
   } else {
-    response = `${label} says: ${styleNote}`;
+    const genericReplies = [
+      `I understand you're thinking about: ${normalized}. That sounds like something worth exploring further - what specific aspect would you like to focus on?`,
+      `Interesting point about ${normalized}. There are many ways to approach this - would you like me to suggest some options or provide more details?`,
+      `Thanks for sharing that thought about ${normalized}. This could lead to some great insights - what would you like to know more about?`,
+      `I see you're considering ${normalized}. That's a topic with lots of possibilities - is there a particular angle you'd like to explore?`,
+      `Noted about ${normalized}. This seems like something we could dive deeper into - what specific information are you looking for?`
+    ];
+    response = `${label} reply: ${genericReplies[Math.floor(Math.random() * genericReplies.length)]}`;
   }
 
   if (model === 'microsoft/DialoGPT-medium') {
