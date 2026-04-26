@@ -2546,7 +2546,6 @@ body::before {
 .overview-row:last-child::after {
   display: none;
 }
-}
 
 @keyframes sparkle {
   0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
