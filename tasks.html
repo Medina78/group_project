@@ -59,6 +59,24 @@
             <h3>Practice flashcards</h3>
             <p>Review vocabulary and definitions for the upcoming quiz to build recall confidence.</p>
         </article>
+
+        <article class="card">
+            <div class="card-icon"></div>
+            <h3>Revise biology notes</h3>
+            <p>Update your lab summaries and mark any areas needing extra review before the test.</p>
+        </article>
+
+        <article class="card">
+            <div class="card-icon"></div>
+            <h3>Answer forum questions</h3>
+            <p>Help classmates on the course forum and reinforce your own understanding with a quick review.</p>
+        </article>
+
+        <article class="card">
+            <div class="card-icon"></div>
+            <h3>Schedule study time</h3>
+            <p>Block out two focused sessions for the week and set clear goals for each slot.</p>
+        </article>
     </div>
 </section>
 
@@ -72,16 +90,106 @@
             <div class="card-icon"></div>
             <h3>AI project draft</h3>
             <p>Outline the introduction, objectives, and research approach for your group project.</p>
+        </article>
 
         <article class="card">
             <div class="card-icon"></div>
             <h3>Study group prep</h3>
             <p>Collect notes and key questions for the Friday review session with your team.</p>
+        </article>
+
         <article class="card">
             <div class="card-icon"></div>
             <h3>Submit lab report</h3>
             <p>Complete the final analysis and double-check all results before turning it in.</p>
         </article>
+
+        <article class="card">
+            <div class="card-icon"></div>
+            <h3>Review feedback</h3>
+            <p>Go through instructor comments from last assignment and add improvements to your notes.</p>
+        </article>
+
+        <article class="card">
+            <div class="card-icon"></div>
+            <h3>Plan weekend study</h3>
+            <p>Choose one major topic to practice deeply and set a follow-up goal for Sunday.</p>
+        </article>
+
+        <article class="card">
+            <div class="card-icon"></div>
+            <h3>Organize project files</h3>
+            <p>Clean up your notes, diagrams, and research materials so everything is easy to find.</p>
+        </article>
+    </div>
+</section>
+
+<section class="task-center-section">
+    <div class="task-center-grid">
+        <div class="task-manager-card">
+            <div class="task-card-header">
+                <div>
+                    <p class="subtle-label">Focus hub</p>
+                    <h2>Task lab</h2>
+                </div>
+                <span class="status-pill status-live">Live</span>
+            </div>
+            <div class="task-input-row">
+                <input type="text" id="newTaskTitle" placeholder="Start a new study task…" aria-label="New task title">
+                <button id="addTaskBtn" class="card-button">Add task</button>
+            </div>
+            <div class="task-filter-group">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="pending">Pending</button>
+                <button class="filter-btn" data-filter="completed">Done</button>
+            </div>
+            <ul class="task-list" id="taskList"></ul>
+        </div>
+
+        <aside class="task-stats-card">
+            <div class="stats-panel">
+                <div class="stats-panel-top">
+                    <div>
+                        <p class="subtle-label">Daily progress</p>
+                        <h3>Keep your rhythm</h3>
+                    </div>
+                    <span class="status-pill status-goal">Goal</span>
+                </div>
+                <div class="progress-ring" aria-hidden="true">
+                    <div class="ring-fill"></div>
+                    <div class="ring-center">
+                        <span id="taskProgressValue">0%</span>
+                        <small>completed</small>
+                    </div>
+                </div>
+                <div class="stats-summary">
+                    <div class="summary-pill">
+                        <span id="activeTaskCount">0</span>
+                        <p>Active</p>
+                    </div>
+                    <div class="summary-pill">
+                        <span id="completedTaskCount">0</span>
+                        <p>Completed</p>
+                    </div>
+                    <div class="summary-pill">
+                        <span id="totalTaskCount">0</span>
+                        <p>Total</p>
+                    </div>
+                </div>
+            </div>
+            <div class="task-microcards">
+                <div class="microcard">
+                    <p>Latest reward</p>
+                    <h4>Focus streak</h4>
+                    <small>4 days in a row</small>
+                </div>
+                <div class="microcard">
+                    <p>Quick tip</p>
+                    <h4>Two-minute review</h4>
+                    <small>Refresh notes after each session.</small>
+                </div>
+            </div>
+        </aside>
     </div>
 </section>
 

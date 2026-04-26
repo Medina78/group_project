@@ -28,6 +28,15 @@ const cancelForgot = document.getElementById("cancelForgot");
 const cancelSignup = document.getElementById("cancelSignup");
 const logoutBtn = document.getElementById("logoutBtn");
 
+const apiSettingsForm = document.getElementById("apiSettingsForm");
+const apiModel = document.getElementById("apiModel");
+const saveApiBtn = document.getElementById("saveApiBtn");
+const apiStatusText = document.getElementById("apiStatusText");
+const aiChatForm = document.getElementById("aiChatForm");
+const aiMessages = document.getElementById("aiMessages");
+const aiPromptInput = document.getElementById("aiPromptInput");
+const aiSendBtn = document.getElementById("aiSendBtn");
+
 const successNotification = document.getElementById("successNotification");
 const notificationMessage = document.getElementById("notificationMessage");
 
@@ -65,6 +74,155 @@ function validatePassword(password) {
   }
   
   return isValid;
+}
+
+function showNotification(message) {
+  if (notificationMessage && successNotification) {
+    notificationMessage.textContent = message;
+    successNotification.classList.add("show");
+    setTimeout(() => {
+      successNotification.classList.remove("show");
+    }, 2600);
+  } else if (apiStatusText) {
+    apiStatusText.textContent = message;
+  } else {
+    console.log(message);
+  }
+}
+
+const aiModelLabels = {
+  'gpt2': 'GPT-2 (Fast)',
+  'distilgpt2': 'DistilGPT-2 (Faster)',
+  'microsoft/DialoGPT-medium': 'DialoGPT (Conversational)'
+};
+
+function getModelLabel(value) {
+  return aiModelLabels[value] || value;
+}
+
+function setApiStatusText(message) {
+  if (apiStatusText) {
+    apiStatusText.textContent = message;
+  }
+}
+
+function initializeAiSettings() {
+  if (!apiModel) return;
+
+  const savedModel = localStorage.getItem('aiModelSelected');
+  apiModel.value = savedModel || apiModel.value || 'distilgpt2';
+  setApiStatusText(`Using ${getModelLabel(apiModel.value)} model`);
+}
+
+function saveApiSettings() {
+  if (!apiModel) return;
+
+  localStorage.setItem('aiModelSelected', apiModel.value);
+  setApiStatusText(`Saved ${getModelLabel(apiModel.value)}`);
+  showNotification('AI settings saved successfully');
+}
+
+function appendAiMessage(role, text) {
+  if (!aiMessages) return;
+
+  const messageEl = document.createElement('div');
+  messageEl.className = `message ${role}`;
+  messageEl.textContent = text;
+  aiMessages.appendChild(messageEl);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+}
+
+function generateAiResponse(prompt, model) {
+  const normalized = prompt.trim();
+  const lower = normalized.toLowerCase();
+  const label = getModelLabel(model);
+  const styleNote = model === 'gpt2'
+    ? 'Keep it short and practical.'
+    : model === 'microsoft/DialoGPT-medium'
+    ? 'Answer in a friendly, conversational tone.'
+    : 'Answer clearly with helpful next steps.';
+
+  let response = '';
+
+  if (lower.includes('summar') || lower.includes('outline')) {
+    response = `${label} summary: Break the topic into three parts, highlight the main ideas, and write a short recap after each section.`;
+  } else if (lower.includes('explain') || lower.includes('how') || lower.includes('why')) {
+    response = `${label} explanation: Start with the core concept, use one example, and connect it back to your study goal.`;
+  } else if (lower.includes('what is')) {
+    if (lower.includes('photosynthesis')) {
+      response = `${label} answer: Photosynthesis is the process plants and some bacteria use to turn sunlight, water, and carbon dioxide into energy and oxygen.`;
+    } else {
+      response = `${label} answer: It is a concept that can be explained step by step. Start with the definition, then give one clear example.`;
+    }
+  } else if (lower.includes('plan') || lower.includes('schedule') || lower.includes('deadline')) {
+    response = `${label} plan: prioritize urgent items first, block focused study slots, and review progress at the end of each hour.`;
+  } else if (lower.includes('quiz') || lower.includes('test') || lower.includes('exam')) {
+    response = `${label} strategy: practice active recall, quiz yourself with flashcards, and revisit the hardest problems last.`;
+  } else {
+    response = `${label} says: ${styleNote}`;
+  }
+
+  if (model === 'microsoft/DialoGPT-medium') {
+    response = `Hey! ${response} 😊`;
+  }
+
+  return response;
+}
+
+function handleAiChatSubmit(event) {
+  event.preventDefault();
+
+  if (!aiPromptInput || !aiMessages) return;
+
+  const prompt = aiPromptInput.value.trim();
+  if (!prompt) return;
+
+  appendAiMessage('user', prompt);
+  aiPromptInput.value = '';
+  aiPromptInput.focus();
+
+  const model = apiModel?.value || 'distilgpt2';
+  const typingEl = document.createElement('div');
+  typingEl.className = 'message assistant typing';
+  typingEl.textContent = 'Thinking...';
+  aiMessages.appendChild(typingEl);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+
+  setTimeout(() => {
+    typingEl.textContent = generateAiResponse(prompt, model);
+    typingEl.classList.remove('typing');
+    setApiStatusText(`Response generated by ${getModelLabel(model)}`);
+  }, 900);
+}
+
+function bindAiSettings() {
+  if (apiModel) {
+    apiModel.addEventListener('change', () => {
+      setApiStatusText(`Using ${getModelLabel(apiModel.value)} model`);
+    });
+  }
+
+  if (apiSettingsForm) {
+    apiSettingsForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+    });
+  }
+}
+
+bindAiSettings();
+
+if (document.readyState !== 'loading') {
+  initializeAiSettings();
+} else {
+  document.addEventListener('DOMContentLoaded', initializeAiSettings);
+}
+
+if (saveApiBtn) {
+  saveApiBtn.addEventListener('click', saveApiSettings);
+}
+
+if (aiChatForm) {
+  aiChatForm.addEventListener('submit', handleAiChatSubmit);
 }
 
 function checkPasswordStrength(password, strengthBarElement, strengthTextElement) {
@@ -361,12 +519,6 @@ window.addEventListener("load", () => {
   }
 
   initializeAiSettings();
-  if (aiChatForm) {
-    aiChatForm.addEventListener("submit", handleAiChatSubmit);
-  }
-  if (saveApiBtn) {
-    saveApiBtn.addEventListener("click", saveApiSettings);
-  }
 });
 
 if (logoutBtn) {
@@ -399,6 +551,198 @@ if (navItems) {
       navLinks.classList.remove("active");
     });
   });
+}
+
+const taskStorageKey = 'studyflowTasks';
+const taskListElement = document.getElementById('taskList');
+const addTaskBtn = document.getElementById('addTaskBtn');
+const newTaskTitle = document.getElementById('newTaskTitle');
+const filterButtons = document.querySelectorAll('.filter-btn');
+const activeTaskCount = document.getElementById('activeTaskCount');
+const completedTaskCount = document.getElementById('completedTaskCount');
+const totalTaskCount = document.getElementById('totalTaskCount');
+const taskProgressValue = document.getElementById('taskProgressValue');
+const progressRing = document.querySelector('.progress-ring .ring-fill');
+
+const defaultTasks = [
+  { id: 1, title: 'Draft essay outline', meta: '30 min write', completed: false },
+  { id: 2, title: 'Review lecture notes', meta: 'Highlight key concepts', completed: false },
+  { id: 3, title: 'Solve practice problems', meta: 'Focus on Chapter 6', completed: false },
+  { id: 4, title: 'Create flashcards', meta: '5 new memory cards', completed: true },
+  { id: 5, title: 'Plan study break', meta: '10-minute walk', completed: false }
+];
+
+let taskState = loadTasks();
+let activeFilter = 'all';
+
+function loadTasks() {
+  try {
+    const saved = localStorage.getItem(taskStorageKey);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (error) {
+    console.warn('Could not load tasks:', error);
+  }
+
+  return [...defaultTasks];
+}
+
+function saveTasks() {
+  localStorage.setItem(taskStorageKey, JSON.stringify(taskState));
+}
+
+function getFilteredTasks() {
+  if (activeFilter === 'pending') {
+    return taskState.filter(task => !task.completed);
+  }
+  if (activeFilter === 'completed') {
+    return taskState.filter(task => task.completed);
+  }
+  return [...taskState];
+}
+
+function renderTasks() {
+  if (!taskListElement) return;
+
+  const tasks = getFilteredTasks();
+  taskListElement.innerHTML = '';
+
+  tasks.forEach((task, index) => {
+    const item = document.createElement('li');
+    item.className = `task-item ${task.completed ? 'completed' : ''}`;
+    item.style.animationDelay = `${index * 60}ms`;
+    item.innerHTML = `
+      <button class="task-checkbox ${task.completed ? 'completed' : ''}" data-action="toggle" data-id="${task.id}" aria-label="Toggle task completion">
+        ${task.completed ? '✓' : ''}
+      </button>
+      <div class="task-body">
+        <p class="task-title">${task.title}</p>
+        <div class="task-meta">${task.meta}</div>
+      </div>
+      <div class="task-actions">
+        <button data-action="remove" data-id="${task.id}">Remove</button>
+      </div>
+    `;
+    taskListElement.appendChild(item);
+  });
+
+  updateTaskStats();
+}
+
+function updateTaskStats() {
+  const total = taskState.length;
+  const completed = taskState.filter(task => task.completed).length;
+  const active = total - completed;
+  const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  if (activeTaskCount) activeTaskCount.textContent = active;
+  if (completedTaskCount) completedTaskCount.textContent = completed;
+  if (totalTaskCount) totalTaskCount.textContent = total;
+  if (taskProgressValue) taskProgressValue.textContent = `${progress}%`;
+  if (progressRing) {
+    progressRing.style.background = `conic-gradient(#ff7e00 ${progress * 3.6}deg, #f1f1f3 ${progress * 3.6}deg 360deg)`;
+  }
+}
+
+function handleTaskChange(event) {
+  const action = event.target.dataset.action;
+  const taskId = Number(event.target.dataset.id);
+  if (!action || !taskId) return;
+
+  if (action === 'toggle') {
+    taskState = taskState.map(task => task.id === taskId ? { ...task, completed: !task.completed } : task);
+    saveTasks();
+    renderTasks();
+    animateRingPulse();
+  }
+
+  if (action === 'remove') {
+    taskState = taskState.filter(task => task.id !== taskId);
+    saveTasks();
+    renderTasks();
+    animateRemovalFeedback();
+  }
+}
+
+function animateRingPulse() {
+  const ring = document.querySelector('.progress-ring');
+  if (!ring) return;
+  ring.classList.add('pulse-ring');
+  setTimeout(() => ring.classList.remove('pulse-ring'), 500);
+}
+
+function animateRemovalFeedback() {
+  const ring = document.querySelector('.progress-ring');
+  if (!ring) return;
+  ring.classList.add('shake-ring');
+  setTimeout(() => ring.classList.remove('shake-ring'), 420);
+}
+
+function setFilter(filter) {
+  activeFilter = filter;
+  filterButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === filter));
+  renderTasks();
+}
+
+function addNewTask() {
+  if (!newTaskTitle || !newTaskTitle.value.trim()) {
+    if (newTaskTitle) {
+      newTaskTitle.classList.add('input-warning');
+      setTimeout(() => newTaskTitle.classList.remove('input-warning'), 500);
+    }
+    return;
+  }
+
+  const newTask = {
+    id: Date.now(),
+    title: newTaskTitle.value.trim(),
+    meta: 'Added just now',
+    completed: false
+  };
+
+  taskState.unshift(newTask);
+  saveTasks();
+  newTaskTitle.value = '';
+  renderTasks();
+  animateTaskAdd();
+}
+
+function animateTaskAdd() {
+  const firstItem = taskListElement.querySelector('.task-item');
+  if (!firstItem) return;
+  firstItem.classList.add('task-pop');
+  setTimeout(() => firstItem.classList.remove('task-pop'), 550);
+}
+
+function initTaskManager() {
+  if (!taskListElement) return;
+
+  renderTasks();
+
+  if (addTaskBtn) {
+    addTaskBtn.addEventListener('click', addNewTask);
+  }
+
+  if (newTaskTitle) {
+    newTaskTitle.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        addNewTask();
+      }
+    });
+  }
+
+  if (taskListElement) {
+    taskListElement.addEventListener('click', handleTaskChange);
+  }
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => setFilter(button.dataset.filter));
+  });
+}
+
+if (document.querySelector('.task-center-section')) {
+  initTaskManager();
 }
 
 function togglePasswordVisibility(inputElement, toggleButton) {
