@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudyFlow</title>
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Commons-emblem-question_book_orange.svg/1280px-Commons-emblem-question_book_orange.svg.png">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
@@ -171,6 +171,9 @@
 </nav>
 
 <section class="hero">
+    <div class="floating-shape"></div>
+    <div class="floating-shape"></div>
+    <div class="floating-shape"></div>
     <div class="hero-content">
         <div class="hero-tag">Welcome to StudyFlow</div>
         <h1>Master Your Studies,<br>Boost Your Productivity</h1>
@@ -185,42 +188,312 @@
     </div>
     <div class="cards-grid">
         <article class="card">
-            <div class="card-icon"></div>
+            <div class="card-icon">📘</div>
             <h3>Study Plan</h3>
             <p>Create custom learning paths, set priorities, and track progress every day.</p>
         </article>
 
         <article class="card">
-            <div class="card-icon"></div>
+            <div class="card-icon">🤖</div>
             <h3>AI Assistant</h3>
             <p>Ask for summaries, practice questions, or schedule reminders with one click.</p>
         </article>
 
         <article class="card">
-            <div class="card-icon"></div>
+            <div class="card-icon">📝</div>
             <h3>Upcoming Tasks</h3>
             <p>See your next deadlines, review what’s due, and stay on top of your workflow.</p>
         </article>
 
         <article class="card">
-            <div class="card-icon"></div>
+            <div class="card-icon">📌</div>
             <h3>Notes</h3>
             <p>Organize your study notes, create flashcards, and keep all your materials in one place.</p>
         </article>
 
         <article class="card">
-            <div class="card-icon"></div>
+            <div class="card-icon">📅</div>
             <h3>Calendar</h3>
             <p>Visualize your schedule, set study sessions, and never miss an important date.</p>
         </article>
 
         <article class="card">
-            <div class="card-icon"></div>
+            <div class="card-icon">⚙️</div>
             <h3>Settings</h3>
             <p>Customize your experience, manage notifications, and adjust your preferences.</p>
         </article>
     </div>
 </section>
+
+<section class="quick-actions-section">
+    <div class="quick-actions-container">
+        <h3>Quick Actions</h3>
+        <div class="quick-actions-grid">
+            <button class="quick-action-btn" onclick="startStudySession()">
+                <span class="action-icon">⏱️</span>
+                <span class="action-text">Start Study Timer</span>
+            </button>
+            <button class="quick-action-btn" onclick="openTaskModal()">
+                <span class="action-icon">➕</span>
+                <span class="action-text">Add Task</span>
+            </button>
+            <button class="quick-action-btn" onclick="openNoteModal()">
+                <span class="action-icon">📝</span>
+                <span class="action-text">Quick Note</span>
+            </button>
+            <button class="quick-action-btn" onclick="openCalendar()">
+                <span class="action-icon">📅</span>
+                <span class="action-text">Schedule Session</span>
+            </button>
+            <button class="quick-action-btn" onclick="openAIAssistant()">
+                <span class="action-icon">🤖</span>
+                <span class="action-text">Ask AI</span>
+            </button>
+            <button class="quick-action-btn" onclick="viewProgress()">
+                <span class="action-icon">📊</span>
+                <span class="action-text">View Progress</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-overview">
+    <div class="overview-container">
+        <div class="overview-grid">
+            <div class="overview-row">
+                <div class="study-progress-card">
+                    <h3>Today's Progress</h3>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Study Time</span>
+                            <span>2.5h / 4h</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 62.5%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Tasks Completed</span>
+                            <span>3 / 5</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Focus Score</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill focus-bar" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="study-timer-card">
+                    <h3>Study Timer</h3>
+                    <div class="timer-display">
+                        <div class="timer-circle">
+                            <span id="timerDisplay">25:00</span>
+                        </div>
+                    </div>
+                    <div class="timer-controls">
+                        <button class="timer-btn" id="startTimer">Start</button>
+                        <button class="timer-btn secondary" id="pauseTimer">Pause</button>
+                        <button class="timer-btn danger" id="resetTimer">Reset</button>
+                    </div>
+                    <div class="timer-presets">
+                        <button class="preset-btn active" data-time="25">25m</button>
+                        <button class="preset-btn" data-time="15">15m</button>
+                        <button class="preset-btn" data-time="30">30m</button>
+                        <button class="preset-btn" data-time="60">1h</button>
+                    </div>
+                    <div class="timer-stats">
+                        <div class="stat-item">
+                            <span class="stat-value" id="sessionsToday">0</span>
+                            <span class="stat-label">Sessions</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="totalTime">0h</span>
+                            <span class="stat-label">Total</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="currentStreak">7</span>
+                            <span class="stat-label">Streak</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overview-row">
+                <div class="recent-activity-card">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon">✅</div>
+                            <div class="activity-content">
+                                <p>Completed "Math Chapter 5 Review"</p>
+                                <span class="activity-time">2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">📝</div>
+                            <div class="activity-content">
+                                <p>Added notes to "Physics Lab Report"</p>
+                                <span class="activity-time">4 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">⏱️</div>
+                            <div class="activity-content">
+                                <p>Study session: 90 minutes focused</p>
+                                <span class="activity-time">Yesterday</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">🎯</div>
+                            <div class="activity-content">
+                                <p>Achieved daily goal: 3 hours study</p>
+                                <span class="activity-time">Yesterday</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">🤖</div>
+                            <div class="activity-content">
+                                <p>AI Assistant: Generated practice questions</p>
+                                <span class="activity-time">2 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upcoming-deadlines-card">
+                    <h3>Upcoming Deadlines</h3>
+                    <div class="deadline-list">
+                        <div class="deadline-item urgent">
+                            <div class="deadline-content">
+                                <p>Final Exam - Computer Science</p>
+                                <span class="deadline-date">Tomorrow, 2:00 PM</span>
+                            </div>
+                            <div class="deadline-priority">High</div>
+                        </div>
+                        <div class="deadline-item">
+                            <div class="deadline-content">
+                                <p>Essay Submission - Literature</p>
+                                <span class="deadline-date">Friday, 11:59 PM</span>
+                            </div>
+                            <div class="deadline-priority">Medium</div>
+                        </div>
+                        <div class="deadline-item">
+                            <div class="deadline-content">
+                                <p>Group Project Presentation</p>
+                                <span class="deadline-date">Next Monday</span>
+                            </div>
+                            <div class="deadline-priority">Low</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overview-row">
+                <div class="motivation-card">
+                    <div class="motivation-content">
+                        <div class="quote-icon">💡</div>
+                        <blockquote>
+                            "The beautiful thing about learning is that no one can take it away from you."
+                            <cite>— B.B. King</cite>
+                        </blockquote>
+                    </div>
+                    <div class="motivation-stats">
+                        <div class="stat">
+                            <span class="stat-number">7</span>
+                            <span class="stat-label">Day Streak</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">24</span>
+                            <span class="stat-label">Total Hours</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">12</span>
+                            <span class="stat-label">Tasks Done</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <div class="footer-logo">
+                <h3>StudyFlow</h3>
+                <p>Master your studies, boost your productivity</p>
+            </div>
+            <div class="social-links">
+                <a href="#" class="social-link">📘</a>
+                <a href="#" class="social-link">🐦</a>
+                <a href="#" class="social-link">📧</a>
+                <a href="#" class="social-link">💼</a>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <h4>Features</h4>
+            <ul>
+                <li><a href="tasks.html">Task Management</a></li>
+                <li><a href="ai-assistant.html">AI Assistant</a></li>
+                <li><a href="calendar.html">Calendar</a></li>
+                <li><a href="notes.html">Notes</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4>Resources</h4>
+            <ul>
+                <li><a href="#">Study Tips</a></li>
+                <li><a href="#">Productivity Guide</a></li>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">API Docs</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4>Company</h4>
+            <ul>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section newsletter">
+            <h4>Stay Updated</h4>
+            <p>Get the latest study tips and features</p>
+            <div class="newsletter-form">
+                <input type="email" placeholder="Enter your email" class="newsletter-input">
+                <button class="newsletter-btn">Subscribe</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="footer-bottom-content">
+            <p>&copy; 2026 StudyFlow. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Terms of Service</a>
+                <span>•</span>
+                <a href="#">Privacy Policy</a>
+                <span>•</span>
+                <a href="#">Cookie Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
 
 </div>
 

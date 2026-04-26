@@ -35,7 +35,6 @@ const passwordToggle = document.getElementById("passwordToggle");
 const signupPasswordToggle = document.getElementById("signupPasswordToggle");
 const signupConfirmPasswordToggle = document.getElementById("signupConfirmPasswordToggle");
 
-// OpenAI API Configuration
 const OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
 const aiMessages = document.getElementById("aiMessages");
@@ -121,13 +120,13 @@ async function fetchAiResponse(userMessage) {
     throw new Error("Invalid API key format. OpenAI keys start with 'sk-'");
   }
 
-  // Add user message to conversation history
+  
   conversationHistory.push({
     role: "user",
     content: userMessage
   });
 
-  // Limit conversation history to last 10 messages for token efficiency
+  
   if (conversationHistory.length > 10) {
     conversationHistory = conversationHistory.slice(-10);
   }
@@ -158,7 +157,7 @@ async function fetchAiResponse(userMessage) {
     const data = await response.json();
     const assistantMessage = data.choices[0]?.message?.content || "No response received";
     
-    // Add assistant message to conversation history
+    
     conversationHistory.push({
       role: "assistant",
       content: assistantMessage
@@ -599,3 +598,160 @@ if (signupConfirmPasswordToggle) {
   const signupConfirmPasswordInput = document.getElementById("signupConfirmPassword");
   togglePasswordVisibility(signupConfirmPasswordInput, signupConfirmPasswordToggle);
 }
+
+class StudyTimer {
+  constructor() {
+    this.timeLeft = 25 * 60;
+    this.isRunning = false;
+    this.isPaused = false;
+    this.interval = null;
+    this.sessionsToday = parseInt(localStorage.getItem('sessionsToday') || '0');
+    this.totalTime = parseInt(localStorage.getItem('totalTime') || '0');
+    this.currentStreak = parseInt(localStorage.getItem('currentStreak') || '7');
+    
+    this.timerDisplay = document.getElementById('timerDisplay');
+    this.startBtn = document.getElementById('startTimer');
+    this.pauseBtn = document.getElementById('pauseTimer');
+    this.resetBtn = document.getElementById('resetTimer');
+    this.presetBtns = document.querySelectorAll('.preset-btn');
+    this.sessionsElement = document.getElementById('sessionsToday');
+    this.totalTimeElement = document.getElementById('totalTime');
+    this.streakElement = document.getElementById('currentStreak');
+    
+    this.init();
+  }
+  
+  init() {
+    this.updateDisplay();
+    this.updateStats();
+    this.bindEvents();
+  }
+  
+  bindEvents() {
+    if (this.startBtn) {
+      this.startBtn.addEventListener('click', () => this.start());
+    }
+    if (this.pauseBtn) {
+      this.pauseBtn.addEventListener('click', () => this.pause());
+    }
+    if (this.resetBtn) {
+      this.resetBtn.addEventListener('click', () => this.reset());
+    }
+    
+    this.presetBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const time = parseInt(e.target.dataset.time);
+        this.setTime(time);
+      });
+    });
+  }
+  
+  setTime(minutes) {
+    this.timeLeft = minutes * 60;
+    this.updateDisplay();
+    
+    this.presetBtns.forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    const activeBtn = document.querySelector(`[data-time="${minutes}"]`);
+    if (activeBtn) {
+      activeBtn.classList.add('active');
+    }
+  }
+  
+  start() {
+    if (this.isRunning) return;
+    
+    this.isRunning = true;
+    this.isPaused = false;
+    
+    this.interval = setInterval(() => {
+      this.timeLeft--;
+      this.updateDisplay();
+      
+      if (this.timeLeft <= 0) {
+        this.complete();
+      }
+    }, 1000);
+    
+    this.updateButtons();
+  }
+  
+  pause() {
+    this.isRunning = false;
+    this.isPaused = true;
+    clearInterval(this.interval);
+    this.updateButtons();
+  }
+  
+  reset() {
+    this.isRunning = false;
+    this.isPaused = false;
+    clearInterval(this.interval);
+    this.timeLeft = 25 * 60;
+    this.updateDisplay();
+    this.updateButtons();
+    
+    this.presetBtns.forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelector('[data-time="25"]').classList.add('active');
+  }
+  
+  complete() {
+    clearInterval(this.interval);
+    this.isRunning = false;
+    this.isPaused = false;
+    
+    this.sessionsToday++;
+    this.totalTime += 25;
+    
+    localStorage.setItem('sessionsToday', this.sessionsToday.toString());
+    localStorage.setItem('totalTime', this.totalTime.toString());
+    
+    this.updateStats();
+    this.showNotification('Study session completed! Great work! 🎉');
+    
+    this.reset();
+  }
+  
+  updateDisplay() {
+    const minutes = Math.floor(this.timeLeft / 60);
+    const seconds = this.timeLeft % 60;
+    const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    if (this.timerDisplay) {
+      this.timerDisplay.textContent = display;
+    }
+  }
+  
+  updateButtons() {
+    if (this.startBtn) {
+      this.startBtn.disabled = this.isRunning && !this.isPaused;
+    }
+    if (this.pauseBtn) {
+      this.pauseBtn.disabled = !this.isRunning || this.isPaused;
+    }
+  }
+  
+  updateStats() {
+    if (this.sessionsElement) {
+      this.sessionsElement.textContent = this.sessionsToday;
+    }
+    if (this.totalTimeElement) {
+      this.totalTimeElement.textContent = Math.floor(this.totalTime / 60) + 'h';
+    }
+    if (this.streakElement) {
+      this.streakElement.textContent = this.currentStreak;
+    }
+  }
+  
+  showNotification(message) {
+    if (typeof showNotification === 'function') {
+      showNotification(message);
+    }
+  }
+}
+
+const studyTimer = new StudyTimer();
