@@ -22,13 +22,32 @@
         </ul>
 
         <div class="nav-right">
-            <button class="logout-btn" id="logoutBtn">Logout</button>
+            <button class="profile-menu-trigger" id="userMenuBtn" aria-label="Open profile menu">⋯</button>
+            <div class="user-menu" id="userMenu">
+                <div class="user-menu-header">
+                    <div class="user-menu-avatar" id="navUserInitials">AB</div>
+                    <div class="user-menu-details">
+                        <p id="navUserName">Amina Brooks</p>
+                        <span id="navUserEmail">amina@studyflow.com</span>
+                    </div>
+                </div>
+                <div class="user-menu-actions">
+                    <button class="user-menu-item" id="goToSettings">Settings</button>
+                    <button class="user-menu-item logout-menu-item" id="logoutBtn">Logout</button>
+                </div>
+            </div>
             <div class="menu-toggle" id="menuToggle">☰</div>
         </div>
     </nav>
 
     <main class="assistant-page">
         <section class="hero">
+            <div class="parallax-background">
+                <div class="parallax-layer layer-1" data-speed="0.04"></div>
+                <div class="parallax-layer layer-2" data-speed="0.08"></div>
+                <div class="parallax-layer layer-3" data-speed="0.05"></div>
+                <div class="parallax-layer layer-4" data-speed="0.12"></div>
+            </div>
             <div class="hero-content">
                 <div class="hero-tag">AI Assistant</div>
                 <h1>Ask questions. Get instant study help.</h1>

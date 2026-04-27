@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow — Settings</title>
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Commons-emblem-question_book_orange.svg/1280px-Commons-emblem-question_book_orange.svg.png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="settings-page">
+    <nav class="navbar">
+        <div class="logo">StudyFlow</div>
+
+        <ul class="nav-links">
+            <a href="index.html"><li>Dashboard</li></a>
+            <a href="tasks.html"><li>Tasks</li></a>
+            <a href="ai-assistant.html"><li>AI Assistant</li></a>
+            <a href="calendar.html"><li>Calendar</li></a>
+            <a href="notes.html"><li>Notes</li></a>
+            <a href="settings.html"><li class="active">Settings</li></a>
+        </ul>
+
+        <div class="nav-right">
+            <button class="profile-menu-trigger" id="userMenuBtn" aria-label="Open profile menu">⋯</button>
+            <div class="user-menu" id="userMenu">
+                <div class="user-menu-header">
+                    <div class="user-menu-avatar" id="navUserInitials">AB</div>
+                    <div class="user-menu-details">
+                        <p id="navUserName">Amina Brooks</p>
+                        <span id="navUserEmail">amina@studyflow.com</span>
+                    </div>
+                </div>
+                <div class="user-menu-actions">
+                    <button class="user-menu-item" id="goToSettings">Settings</button>
+                    <button class="user-menu-item logout-menu-item" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+            <div class="menu-toggle" id="menuToggle">☰</div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="hero-content">
+            <div class="hero-tag">Profile & Settings</div>
+            <h1>Design your StudyFlow experience</h1>
+            <p>Choose your theme, tune notifications, and keep your profile ready for every study session.</p>
+        </div>
+    </section>
+
+    <main class="settings-layout">
+        <div class="settings-header">
+            <div>
+                <h1>Customize how StudyFlow works for you.</h1>
+                <p>Manage your profile details, toggle dark mode, and personalize the app in one clean dashboard.</p>
+            </div>
+            <div class="card profile-card">
+                <div class="profile-top">
+                    <div class="profile-avatar" id="settingsAvatar">AB</div>
+                    <div class="profile-info">
+                        <h3 id="profileName">Amina Brooks</h3>
+                        <p id="profileBio">Focused learner building better habits and mastering new skills.</p>
+                        <span id="profileRole" class="profile-role">Student</span>
+                    </div>
+                </div>
+                <p class="profile-contact"><strong>Email:</strong> <span id="profileEmail">amina@studyflow.com</span></p>
+                <div class="profile-metrics">
+                    <div class="profile-metric">
+                        <h4 id="profileGoalValue">72%</h4>
+                        <span>Weekly goal</span>
+                    </div>
+                    <div class="profile-metric">
+                        <h4 id="profileTasksValue">18</h4>
+                        <span>Active tasks</span>
+                    </div>
+                    <div class="profile-metric">
+                        <h4 id="profileFocusValue">4.8</h4>
+                        <span>Focus score</span>
+                    </div>
+                </div>
+                <form id="profileSettingsForm" class="profile-form">
+                    <div class="profile-form-grid">
+                        <div class="form-group">
+                            <label for="profileNameInput">Name</label>
+                            <input type="text" id="profileNameInput" placeholder="Your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileRoleInput">Role</label>
+                            <input type="text" id="profileRoleInput" placeholder="Student, Peer Mentor, Tutor...">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="profileBioInput">Bio</label>
+                            <textarea id="profileBioInput" rows="3" placeholder="Write a short study bio..."></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="button profile-save-btn">Save profile</button>
+                </form>
+                <button type="button" class="button logout-card-btn" id="settingsLogoutBtn">Log out</button>
+            </div>
+        </div>
+
+        <div class="settings-grid">
+            <section class="card settings-card">
+                <h2>App Preferences</h2>
+                <form id="appSettingsForm">
+                    <div class="setting-row">
+                        <div class="setting-meta">
+                            <label for="darkModeToggle">Dark mode</label>
+                            <span>Switch between light and dark themes for better focus.</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-meta">
+                            <label for="notificationToggle">Notifications</label>
+                            <span>Receive reminders for upcoming deadlines and study sessions.</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="notificationToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-meta">
+                            <label for="accentSelect">Accent theme</label>
+                            <span>Choose a highlight color that matches your style.</span>
+                        </div>
+                        <select id="accentSelect">
+                            <option value="sunrise">Sunrise Orange</option>
+                            <option value="storm">Storm Blue</option>
+                            <option value="forest">Forest Green</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="save-settings-btn">Save preferences</button>
+                </form>
+                <p class="settings-bottom-note">Preferences are saved locally so StudyFlow remembers your theme and notification choices.</p>
+            </section>
+
+            <section class="card quick-links-card">
+                <h3>Quick account actions</h3>
+                <ul>
+                    <li>Profile details <a href="#">Edit</a></li>
+                    <li>Security settings <a href="#">Update</a></li>
+                    <li>Connected apps <a href="#">Manage</a></li>
+                    <li>App tutorials <a href="#">Explore</a></li>
+                </ul>
+            </section>
+
+            <section class="card security-card">
+                <h3>Security & support</h3>
+                <ul>
+                    <li>Two-factor authentication <a href="#">Enable</a></li>
+                    <li>Restore saved settings <a href="#">Reset</a></li>
+                    <li>Support center <a href="#">Contact</a></li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <h3>StudyFlow</h3>
+                    <p>Master your studies, boost your productivity</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">📧</a>
+                    <a href="#" class="social-link">💼</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>Features</h4>
+                <ul>
+                    <li><a href="tasks.html">Task Management</a></li>
+                    <li><a href="ai-assistant.html">AI Assistant</a></li>
+                    <li><a href="calendar.html">Calendar</a></li>
+                    <li><a href="notes.html">Notes</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Study Tips</a></li>
+                    <li><a href="#">Productivity Guide</a></li>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">API Docs</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section newsletter">
+                <h4>Stay Updated</h4>
+                <p>Get the latest study tips and features</p>
+                <div class="newsletter-form">
+                    <input type="email" placeholder="Enter your email" class="newsletter-input">
+                    <button class="newsletter-btn">Subscribe</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>&copy; 2026 StudyFlow. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Terms of Service</a>
+                    <span>•</span>
+                    <a href="#">Privacy Policy</a>
+                    <span>•</span>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

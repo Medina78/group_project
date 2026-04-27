@@ -40,9 +40,311 @@ const aiSendBtn = document.getElementById("aiSendBtn");
 const successNotification = document.getElementById("successNotification");
 const notificationMessage = document.getElementById("notificationMessage");
 
-const passwordToggle = document.getElementById("passwordToggle");
-const signupPasswordToggle = document.getElementById("signupPasswordToggle");
-const signupConfirmPasswordToggle = document.getElementById("signupConfirmPasswordToggle");
+const userMenuBtn = document.getElementById("userMenuBtn");
+const userMenu = document.getElementById("userMenu");
+const navUserInitials = document.getElementById("navUserInitials");
+const navUserName = document.getElementById("navUserName");
+const navUserEmail = document.getElementById("navUserEmail");
+const goToSettingsBtn = document.getElementById("goToSettings");
+const settingsLogoutBtn = document.getElementById("settingsLogoutBtn");
+const profileSettingsForm = document.getElementById("profileSettingsForm");
+const profileNameInput = document.getElementById("profileNameInput");
+const profileRoleInput = document.getElementById("profileRoleInput");
+const profileBioInput = document.getElementById("profileBioInput");
+const profileGoalInput = document.getElementById("profileGoalInput");
+const settingsAvatar = document.getElementById("settingsAvatar");
+
+const tasksFilterButtons = document.querySelectorAll(".filter-btn");
+const newTaskTitleInput = document.getElementById("newTaskTitle");
+const addTaskBtn = document.getElementById("addTaskBtn");
+const taskListElement = document.getElementById("taskList");
+const taskProgressValue = document.getElementById("taskProgressValue");
+const activeTaskCountElement = document.getElementById("activeTaskCount");
+const completedTaskCountElement = document.getElementById("completedTaskCount");
+const totalTaskCountElement = document.getElementById("totalTaskCount");
+
+const noteForm = document.getElementById("noteForm");
+const noteTitleInput = document.getElementById("noteTitle");
+const noteCategorySelect = document.getElementById("noteCategory");
+const noteContentInput = document.getElementById("noteContent");
+const notesList = document.getElementById("notesList");
+const noteCount = document.getElementById("noteCount");
+const pinnedCountElement = document.getElementById("pinnedCount");
+const ideaCountElement = document.getElementById("ideaCount");
+const scratchpadInput = document.getElementById("scratchpadInput");
+const noteFilterButtons = document.querySelectorAll(".note-filter-btn");
+const activeFilterLabel = document.getElementById("activeFilterLabel");
+const clearNoteBtn = document.getElementById("clearNoteBtn");
+
+let currentUser = null;
+let tasks = [];
+let notes = [];
+
+function loadUsers() {
+  return JSON.parse(localStorage.getItem("studyflowUsers") || "{}");
+}
+
+function saveUsers(users) {
+  localStorage.setItem("studyflowUsers", JSON.stringify(users));
+}
+
+function getCurrentUserEmail() {
+  return localStorage.getItem("studyflowCurrentUser");
+}
+
+function getCurrentUser() {
+  const email = getCurrentUserEmail();
+  if (!email) return null;
+  const users = loadUsers();
+  return users[email] || null;
+}
+
+window.getCurrentUser = getCurrentUser;
+
+function setCurrentUser(user) {
+  const users = loadUsers();
+  users[user.email] = user;
+  saveUsers(users);
+  localStorage.setItem("studyflowCurrentUser", user.email);
+  currentUser = user;
+}
+
+function updateNavUser() {
+  const user = currentUser || getCurrentUser();
+  if (!user) return;
+  if (navUserName) navUserName.textContent = user.name || "StudyFlow User";
+  if (navUserEmail) navUserEmail.textContent = user.email || "user@studyflow.com";
+  if (navUserInitials) {
+    navUserInitials.textContent = (user.name || "SF").split(" ").map(part => part[0]).join("").slice(0, 2).toUpperCase();
+  }
+}
+
+function closeUserMenu() {
+  if (userMenu) userMenu.classList.remove("active");
+}
+
+function toggleUserMenu() {
+  if (!userMenu) return;
+  userMenu.classList.toggle("active");
+}
+
+function handleDocumentClick(event) {
+  if (!userMenu || !userMenuBtn) return;
+  if (!userMenu.contains(event.target) && !userMenuBtn.contains(event.target)) {
+    closeUserMenu();
+  }
+}
+
+function getStorageKey(key) {
+  const user = currentUser || getCurrentUser();
+  const email = user?.email || "guest";
+  return `${key}-${email}`;
+}
+
+function loadUserData(key) {
+  return JSON.parse(localStorage.getItem(getStorageKey(key)) || "[]");
+}
+
+function saveUserData(key, data) {
+  localStorage.setItem(getStorageKey(key), JSON.stringify(data));
+}
+
+function loadProfilePage() {
+  const user = currentUser || getCurrentUser();
+  if (!user) return;
+  if (profileNameInput) profileNameInput.value = user.name || "";
+  if (profileRoleInput) profileRoleInput.value = user.role || "Student";
+  if (profileBioInput) profileBioInput.value = user.bio || "";
+  if (profileGoalInput) profileGoalInput.value = user.goal || "";
+  if (settingsAvatar) settingsAvatar.textContent = (user.name || "SF").split(" ").map(part => part[0]).join("").slice(0, 2).toUpperCase();
+  if (document.getElementById("profileName")) document.getElementById("profileName").textContent = user.name || "StudyFlow User";
+  if (document.getElementById("profileBio")) document.getElementById("profileBio").textContent = user.bio || "Add a short study bio to personalize your account.";
+  if (document.getElementById("profileRole")) document.getElementById("profileRole").textContent = user.role || "Student";
+}
+
+function saveProfileSettings(event) {
+  if (event) event.preventDefault();
+  const user = currentUser || getCurrentUser();
+  if (!user) return;
+
+  user.name = profileNameInput?.value.trim() || user.name;
+  user.role = profileRoleInput?.value.trim() || user.role;
+  user.bio = profileBioInput?.value.trim() || user.bio;
+  user.goal = profileGoalInput?.value.trim() || user.goal;
+  setCurrentUser(user);
+  updateNavUser();
+  loadProfilePage();
+  showNotification("Your profile has been updated.");
+}
+
+function handleLogout() {
+  localStorage.removeItem("studyflowCurrentUser");
+  currentUser = null;
+  window.location.href = "index.html";
+}
+
+function ensureAuthenticated() {
+  const user = getCurrentUser();
+  if (!user && !window.location.pathname.endsWith("index.html")) {
+    window.location.href = "index.html";
+  }
+  return user;
+}
+
+function initializeSession() {
+  currentUser = getCurrentUser();
+  updateNavUser();
+  if (window.location.pathname.endsWith("index.html") && currentUser) {
+    const loginContainer = document.getElementById("loginContainer");
+    const dashboardContainer = document.getElementById("dashboardContainer");
+    if (loginContainer) loginContainer.style.display = "none";
+    if (dashboardContainer) dashboardContainer.style.display = "block";
+    const heroTag = document.querySelector(".hero-tag");
+    const heroTitle = document.querySelector(".hero h1");
+    if (heroTag) heroTag.textContent = `Welcome back`;
+    if (heroTitle) heroTitle.textContent = `Ready to continue your study streak, ${currentUser.name.split(" ")[0]}?`;
+  }
+}
+
+function updateUserMetrics() {
+  const user = currentUser || getCurrentUser();
+  if (!user) return;
+  const activeCount = tasks.filter(task => !task.completed).length;
+  const completedCount = tasks.filter(task => task.completed).length;
+  if (document.getElementById("profileTasksValue")) document.getElementById("profileTasksValue").textContent = activeCount.toString();
+  if (document.getElementById("activeTaskCount")) document.getElementById("activeTaskCount").textContent = activeCount.toString();
+  if (document.getElementById("completedTaskCount")) document.getElementById("completedTaskCount").textContent = completedCount.toString();
+  if (document.getElementById("totalTaskCount")) document.getElementById("totalTaskCount").textContent = tasks.length.toString();
+  const progress = tasks.length === 0 ? 0 : Math.round((completedCount / tasks.length) * 100);
+  if (taskProgressValue) taskProgressValue.textContent = `${progress}%`;
+}
+
+function loadTasks() {
+  tasks = loadUserData("studyflowTasks") || [];
+  renderTasks();
+}
+
+function saveTasks() {
+  saveUserData("studyflowTasks", tasks);
+}
+
+function renderTasks(filter = "all") {
+  if (!taskListElement) return;
+  const filtered = tasks.filter(task => {
+    if (filter === "pending") return !task.completed;
+    if (filter === "completed") return task.completed;
+    return true;
+  });
+  taskListElement.innerHTML = filtered.map(task => `
+    <li class="task-item ${task.completed ? "completed" : ""}">
+      <div class="task-left">
+        <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.completed ? "checked" : ""}>
+        <span class="task-title">${task.title}</span>
+      </div>
+      <div class="task-actions">
+        <button class="task-action-btn" title="Delete task" data-delete-id="${task.id}">🗑️</button>
+      </div>
+    </li>
+  `).join("");
+  updateUserMetrics();
+}
+
+function addTask(title) {
+  if (!title) return;
+  tasks.unshift({ id: Date.now().toString(), title, completed: false, createdAt: new Date().toISOString() });
+  saveTasks();
+  renderTasks();
+}
+
+function toggleTaskCompletion(id) {
+  const item = tasks.find(task => task.id === id);
+  if (!item) return;
+  item.completed = !item.completed;
+  saveTasks();
+  renderTasks();
+}
+
+function removeTask(id) {
+  tasks = tasks.filter(task => task.id !== id);
+  saveTasks();
+  renderTasks();
+}
+
+function loadNotes() {
+  notes = loadUserData("studyflowNotes") || [];
+  renderNotes();
+}
+
+function saveNotes() {
+  saveUserData("studyflowNotes", notes);
+}
+
+function renderNotes(filter = "all") {
+  if (!notesList) return;
+  const filtered = notes.filter(note => {
+    if (filter === "pinned") return note.pinned;
+    if (filter === "ideas") return note.category === "ideas";
+    if (filter === "useful") return note.category === "useful";
+    return true;
+  });
+  notesList.innerHTML = filtered.length === 0 ? `<div class="empty-notes">No notes yet. Add one to start your notebook.</div>` : filtered.map(note => `
+    <div class="note-card ${note.pinned ? "pinned" : ""}" data-note-id="${note.id}">
+      <div class="note-card-header">
+        <h4>${note.title}</h4>
+        <button class="note-pin-btn" data-pin-id="${note.id}">📌</button>
+      </div>
+      <p>${note.content}</p>
+      <div class="note-card-footer">
+        <span>${note.category}</span>
+        <button class="note-delete-btn" data-delete-id="${note.id}">Delete</button>
+      </div>
+    </div>
+  `).join("");
+  if (noteCount) noteCount.textContent = notes.length.toString();
+  if (pinnedCountElement) pinnedCountElement.textContent = notes.filter(note => note.pinned).length.toString();
+  if (ideaCountElement) ideaCountElement.textContent = notes.filter(note => note.category === "ideas").length.toString();
+}
+
+function createNote() {
+  const title = noteTitleInput?.value.trim();
+  const content = noteContentInput?.value.trim();
+  const category = noteCategorySelect?.value || "useful";
+  if (!title || !content) return;
+  notes.unshift({ id: Date.now().toString(), title, content, category, pinned: false, createdAt: new Date().toISOString() });
+  saveNotes();
+  renderNotes();
+  if (noteForm) noteForm.reset();
+}
+
+function handleNoteAction(target) {
+  if (target.dataset.pinId) {
+    const id = target.dataset.pinId;
+    const note = notes.find(item => item.id === id);
+    if (note) {
+      note.pinned = !note.pinned;
+      saveNotes();
+      renderNotes();
+    }
+  }
+  if (target.dataset.deleteId) {
+    notes = notes.filter(note => note.id !== target.dataset.deleteId);
+    saveNotes();
+    renderNotes();
+  }
+}
+
+function handleLoginSuccess(user) {
+  setCurrentUser(user);
+  updateNavUser();
+  if (window.location.pathname.endsWith("index.html")) {
+    const loginContainer = document.getElementById("loginContainer");
+    const dashboardContainer = document.getElementById("dashboardContainer");
+    if (loginContainer) loginContainer.style.display = "none";
+    if (dashboardContainer) dashboardContainer.style.display = "block";
+  } else {
+    window.location.href = "index.html";
+  }
+}
 
 function closeAllModals() {
   if (forgotPasswordModal) forgotPasswordModal.classList.remove("active");
@@ -351,10 +653,120 @@ function bindAiSettings() {
 
 bindAiSettings();
 
+const darkModeToggle = document.getElementById("darkModeToggle");
+const notificationToggle = document.getElementById("notificationToggle");
+const accentSelect = document.getElementById("accentSelect");
+const profileName = document.getElementById("profileName");
+const profileEmail = document.getElementById("profileEmail");
+const profileBio = document.getElementById("profileBio");
+const profileRole = document.getElementById("profileRole");
+const settingsForm = document.getElementById("appSettingsForm");
+
+function setTheme(theme) {
+  const isDark = theme === "dark";
+  document.body.classList.toggle("dark-mode", isDark);
+  localStorage.setItem("studyflowTheme", theme);
+}
+
+function updateAccentColor(value) {
+  const color = value === "storm" ? "#6372ff" : value === "forest" ? "#34d399" : "#ff7e00";
+  document.documentElement.style.setProperty("--accent", color);
+  localStorage.setItem("studyflowAccent", value);
+}
+
+function initializeTheme() {
+  const user = currentUser || getCurrentUser();
+  const savedTheme = user?.settings?.theme || localStorage.getItem("studyflowTheme") || "light";
+  setTheme(savedTheme);
+  const savedAccent = user?.settings?.accent || localStorage.getItem("studyflowAccent") || "sunrise";
+  if (accentSelect) {
+    accentSelect.value = savedAccent;
+  }
+  updateAccentColor(savedAccent);
+}
+
+function initializeSettingsPage() {
+  const user = currentUser || getCurrentUser();
+  if (profileName) {
+    profileName.textContent = user?.name || "Amina Brooks";
+  }
+  if (profileEmail) {
+    profileEmail.textContent = user?.email || "amina@studyflow.com";
+  }
+  if (profileBio) {
+    profileBio.textContent = user?.bio || "Focused learner building better habits and mastering new skills.";
+  }
+  if (profileRole) {
+    profileRole.textContent = user?.role || "Student";
+  }
+  if (darkModeToggle) {
+    darkModeToggle.checked = user?.settings?.theme === "dark";
+  }
+  if (notificationToggle) {
+    notificationToggle.checked = user?.settings?.notifications ?? true;
+  }
+  if (accentSelect) {
+    accentSelect.value = user?.settings?.accent || "sunrise";
+  }
+}
+
+function saveAppSettings(event) {
+  if (event) event.preventDefault();
+  const user = currentUser || getCurrentUser();
+  if (!user) return;
+  user.settings = user.settings || {};
+  if (notificationToggle) {
+    user.settings.notifications = notificationToggle.checked;
+  }
+  if (accentSelect) {
+    user.settings.accent = accentSelect.value;
+    updateAccentColor(accentSelect.value);
+  }
+  localStorage.setItem("studyflowTheme", user.settings.theme || "light");
+  localStorage.setItem("studyflowAccent", user.settings.accent || "sunrise");
+  setCurrentUser(user);
+  showNotification("Your settings were saved successfully.");
+}
+
+function initializeHeroParallax() {
+  // Parallax effect handled by CSS background-attachment: fixed
+  // No additional JavaScript needed for the old design
+}
+
+if (darkModeToggle) {
+  darkModeToggle.addEventListener("change", () => {
+    setTheme(darkModeToggle.checked ? "dark" : "light");
+  });
+}
+
+if (notificationToggle) {
+  notificationToggle.addEventListener("change", () => {
+    localStorage.setItem("studyflowNotifications", notificationToggle.checked);
+  });
+}
+
+if (accentSelect) {
+  accentSelect.addEventListener("change", (event) => {
+    updateAccentColor(event.target.value);
+  });
+}
+
+if (settingsForm) {
+  settingsForm.addEventListener("submit", saveAppSettings);
+}
+
 if (document.readyState !== 'loading') {
+  initializeTheme();
+  initializeSettingsPage();
   initializeAiSettings();
+  initializeHeroParallax();
 } else {
-  document.addEventListener('DOMContentLoaded', initializeAiSettings);
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeTheme();
+    initializeSettingsPage();
+    initializeAiSettings();
+    initializeHeroParallax();
+  });
 }
 
 if (saveApiBtn) {
@@ -430,23 +842,26 @@ if (loginForm) {
     }
     
     const emailValid = validateEmail(email);
-    const passwordValid = validatePassword(password);
+    const passwordValid = password.length > 0;
     
-    if (emailValid && passwordValid) {
-      showNotification("Login successful! Welcome back.");
-      
-      setTimeout(() => {
-        loginContainer.style.display = "none";
-        dashboardContainer.style.display = "block";
-        
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userEmail", email);
-      
-        loginForm.reset();
-        strengthBar.style.width = "0%";
-        strengthText.textContent = "";
-      }, 600);
+    if (!emailValid || !passwordValid) return;
+
+    const users = loadUsers();
+    const user = users[email.toLowerCase()];
+
+    if (!user || user.password !== password) {
+      passwordError.textContent = "Email or password is incorrect.";
+      passwordError.style.display = "block";
+      return;
     }
+
+    handleLoginSuccess(user);
+    showNotification(`Welcome back, ${user.name.split(" ")[0]}!`);
+
+    if (emailInput) emailInput.value = "";
+    if (passwordInput) passwordInput.value = "";
+    if (strengthBar) strengthBar.style.width = "0%";
+    if (strengthText) strengthText.textContent = "";
   });
 }
 
@@ -578,7 +993,7 @@ if (signupForm) {
     e.preventDefault();
     
     const name = signupNameInput.value.trim();
-    const email = signupEmailInput.value.trim();
+    const email = signupEmailInput.value.trim().toLowerCase();
     const password = signupPasswordInput.value;
     const confirmPassword = signupConfirmPasswordInput.value;
     const agreeTerms = agreeTermsCheckbox.checked;
@@ -641,504 +1056,181 @@ if (signupForm) {
       termsError.style.display = "none";
     }
 
-    if (isValid) {
-      showNotification("Account created successfully! You can now login.");
-      signupForm.reset();
-      signupStrengthBar.style.width = "0%";
-      signupStrengthText.textContent = "";
-      signupModal.classList.remove("active");
+    if (!isValid) {
+      return;
     }
-  });
-}
 
-window.addEventListener("load", () => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
-  if (isLoggedIn === "true") {
-    loginContainer.style.display = "none";
-    dashboardContainer.style.display = "block";
-  }
-
-  initializeAiSettings();
-});
-
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userEmail");
-    loginContainer.style.display = "flex";
-    dashboardContainer.style.display = "none";
-    loginForm.reset();
-    showNotification("Logged out successfully!");
-  });
-}
-
-const menuToggle = document.getElementById("menuToggle");
-const navLinks = document.querySelector(".nav-links");
-const navItems = document.querySelectorAll(".nav-links li");
-
-if (menuToggle) {
-  menuToggle.addEventListener("click", () => {
-    navLinks.classList.toggle("active");
-  });
-}
-
-if (navItems) {
-  navItems.forEach(item => {
-    item.addEventListener("click", () => {
-      document.querySelector(".nav-links li.active")?.classList.remove("active");
-      item.classList.add("active");
-      navLinks.classList.remove("active");
-    });
-  });
-}
-
-const taskStorageKey = 'studyflowTasks';
-const taskListElement = document.getElementById('taskList');
-const addTaskBtn = document.getElementById('addTaskBtn');
-const newTaskTitle = document.getElementById('newTaskTitle');
-const filterButtons = document.querySelectorAll('.filter-btn');
-const activeTaskCount = document.getElementById('activeTaskCount');
-const completedTaskCount = document.getElementById('completedTaskCount');
-const totalTaskCount = document.getElementById('totalTaskCount');
-const taskProgressValue = document.getElementById('taskProgressValue');
-const progressRing = document.querySelector('.progress-ring .ring-fill');
-
-const defaultTasks = [
-  { id: 1, title: 'Draft essay outline', meta: '30 min write', completed: false },
-  { id: 2, title: 'Review lecture notes', meta: 'Highlight key concepts', completed: false },
-  { id: 3, title: 'Solve practice problems', meta: 'Focus on Chapter 6', completed: false },
-  { id: 4, title: 'Create flashcards', meta: '5 new memory cards', completed: true },
-  { id: 5, title: 'Plan study break', meta: '10-minute walk', completed: false }
-];
-
-let taskState = loadTasks();
-let activeFilter = 'all';
-
-function loadTasks() {
-  try {
-    const saved = localStorage.getItem(taskStorageKey);
-    if (saved) {
-      return JSON.parse(saved);
+    const users = loadUsers();
+    if (users[email]) {
+      signupEmailError.textContent = "An account with this email already exists.";
+      signupEmailError.style.display = "block";
+      return;
     }
-  } catch (error) {
-    console.warn('Could not load tasks:', error);
-  }
 
-  return [...defaultTasks];
-}
-
-function saveTasks() {
-  localStorage.setItem(taskStorageKey, JSON.stringify(taskState));
-}
-
-function getFilteredTasks() {
-  if (activeFilter === 'pending') {
-    return taskState.filter(task => !task.completed);
-  }
-  if (activeFilter === 'completed') {
-    return taskState.filter(task => task.completed);
-  }
-  return [...taskState];
-}
-
-function renderTasks() {
-  if (!taskListElement) return;
-
-  const tasks = getFilteredTasks();
-  taskListElement.innerHTML = '';
-
-  tasks.forEach((task, index) => {
-    const item = document.createElement('li');
-    item.className = `task-item ${task.completed ? 'completed' : ''}`;
-    item.style.animationDelay = `${index * 60}ms`;
-    item.innerHTML = `
-      <button class="task-checkbox ${task.completed ? 'completed' : ''}" data-action="toggle" data-id="${task.id}" aria-label="Toggle task completion">
-        ${task.completed ? '✓' : ''}
-      </button>
-      <div class="task-body">
-        <p class="task-title">${task.title}</p>
-        <div class="task-meta">${task.meta}</div>
-      </div>
-      <div class="task-actions">
-        <button data-action="remove" data-id="${task.id}">Remove</button>
-      </div>
-    `;
-    taskListElement.appendChild(item);
-  });
-
-  updateTaskStats();
-}
-
-function updateTaskStats() {
-  const total = taskState.length;
-  const completed = taskState.filter(task => task.completed).length;
-  const active = total - completed;
-  const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-  if (activeTaskCount) activeTaskCount.textContent = active;
-  if (completedTaskCount) completedTaskCount.textContent = completed;
-  if (totalTaskCount) totalTaskCount.textContent = total;
-  if (taskProgressValue) taskProgressValue.textContent = `${progress}%`;
-  if (progressRing) {
-    progressRing.style.background = `conic-gradient(#ff7e00 ${progress * 3.6}deg, #f1f1f3 ${progress * 3.6}deg 360deg)`;
-  }
-}
-
-function handleTaskChange(event) {
-  const action = event.target.dataset.action;
-  const taskId = Number(event.target.dataset.id);
-  if (!action || !taskId) return;
-
-  if (action === 'toggle') {
-    taskState = taskState.map(task => task.id === taskId ? { ...task, completed: !task.completed } : task);
-    saveTasks();
-    renderTasks();
-    animateRingPulse();
-  }
-
-  if (action === 'remove') {
-    taskState = taskState.filter(task => task.id !== taskId);
-    saveTasks();
-    renderTasks();
-    animateRemovalFeedback();
-  }
-}
-
-function animateRingPulse() {
-  const ring = document.querySelector('.progress-ring');
-  if (!ring) return;
-  ring.classList.add('pulse-ring');
-  setTimeout(() => ring.classList.remove('pulse-ring'), 500);
-}
-
-function animateRemovalFeedback() {
-  const ring = document.querySelector('.progress-ring');
-  if (!ring) return;
-  ring.classList.add('shake-ring');
-  setTimeout(() => ring.classList.remove('shake-ring'), 420);
-}
-
-function setFilter(filter) {
-  activeFilter = filter;
-  filterButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === filter));
-  renderTasks();
-}
-
-function addNewTask() {
-  if (!newTaskTitle || !newTaskTitle.value.trim()) {
-    if (newTaskTitle) {
-      newTaskTitle.classList.add('input-warning');
-      setTimeout(() => newTaskTitle.classList.remove('input-warning'), 500);
-    }
-    return;
-  }
-
-  const newTask = {
-    id: Date.now(),
-    title: newTaskTitle.value.trim(),
-    meta: 'Added just now',
-    completed: false
-  };
-
-  taskState.unshift(newTask);
-  saveTasks();
-  newTaskTitle.value = '';
-  renderTasks();
-  animateTaskAdd();
-}
-
-function animateTaskAdd() {
-  const firstItem = taskListElement.querySelector('.task-item');
-  if (!firstItem) return;
-  firstItem.classList.add('task-pop');
-  setTimeout(() => firstItem.classList.remove('task-pop'), 550);
-}
-
-function initTaskManager() {
-  if (!taskListElement) return;
-
-  renderTasks();
-
-  if (addTaskBtn) {
-    addTaskBtn.addEventListener('click', addNewTask);
-  }
-
-  if (newTaskTitle) {
-    newTaskTitle.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        addNewTask();
+    const newUser = {
+      name,
+      email,
+      password,
+      bio: "Ready to build a better study routine.",
+      role: "Student",
+      goal: "Keep focus strong",
+      settings: {
+        theme: "light",
+        accent: "sunrise",
+        notifications: true
       }
+    };
+
+    users[email] = newUser;
+    saveUsers(users);
+    setCurrentUser(newUser);
+    handleLoginSuccess(newUser);
+    showNotification(`Welcome, ${name}! Your account is ready.`);
+    signupForm.reset();
+    signupStrengthBar.style.width = "0%";
+    signupStrengthText.textContent = "";
+    signupModal.classList.remove("active");
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  initializeSession();
+  ensureAuthenticated();
+
+  if (profileSettingsForm) {
+    profileSettingsForm.addEventListener("submit", saveProfileSettings);
+  }
+
+  if (settingsLogoutBtn) {
+    settingsLogoutBtn.addEventListener("click", handleLogout);
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      handleLogout();
+    });
+  }
+
+  if (userMenuBtn) {
+    userMenuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleUserMenu();
+    });
+  }
+
+  if (goToSettingsBtn) {
+    goToSettingsBtn.addEventListener("click", () => {
+      window.location.href = "settings.html";
+    });
+  }
+
+  document.addEventListener("click", handleDocumentClick);
+
+  const menuToggle = document.getElementById("menuToggle");
+  const navLinks = document.querySelector(".nav-links");
+  const navItems = document.querySelectorAll(".nav-links li");
+
+  if (menuToggle) {
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+  }
+
+  if (navItems) {
+    navItems.forEach(item => {
+      item.addEventListener("click", () => {
+        document.querySelector(".nav-links li.active")?.classList.remove("active");
+        item.classList.add("active");
+        navLinks.classList.remove("active");
+      });
+    });
+  }
+
+  if (addTaskBtn && newTaskTitleInput) {
+    addTaskBtn.addEventListener("click", () => {
+      addTask(newTaskTitleInput.value.trim());
+      newTaskTitleInput.value = "";
     });
   }
 
   if (taskListElement) {
-    taskListElement.addEventListener('click', handleTaskChange);
-  }
-
-  filterButtons.forEach(button => {
-    button.addEventListener('click', () => setFilter(button.dataset.filter));
-  });
-}
-
-if (document.querySelector('.task-center-section')) {
-  initTaskManager();
-}
-
-const noteStorageKey = 'studyflowNotes';
-const scratchpadStorageKey = 'studyflowScratchpad';
-const noteForm = document.getElementById('noteForm');
-const noteTitleInput = document.getElementById('noteTitle');
-const noteContentInput = document.getElementById('noteContent');
-const noteCategorySelect = document.getElementById('noteCategory');
-const notesListElement = document.getElementById('notesList');
-const noteFilterButtons = document.querySelectorAll('.note-filter-btn');
-const noteCountLabel = document.getElementById('noteCount');
-const pinnedCountLabel = document.getElementById('pinnedCount');
-const ideaCountLabel = document.getElementById('ideaCount');
-const activeFilterLabel = document.getElementById('activeFilterLabel');
-const clearNoteBtn = document.getElementById('clearNoteBtn');
-const scratchpadInput = document.getElementById('scratchpadInput');
-
-const defaultNotes = [
-  {
-    id: 1,
-    title: 'Exam summary checklist',
-    content: 'Highlight key formulas, create flashcard prompts, and mark the 3 concepts you must review tonight.',
-    category: 'review',
-    pinned: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 2,
-    title: 'Group study agenda',
-    content: 'Set a topic for each teammate, add discussion questions, and list one follow-up resource per concept.',
-    category: 'ideas',
-    pinned: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
-  },
-  {
-    id: 3,
-    title: 'Write active recall prompts',
-    content: 'Turn definitions into questions, swap details for examples, and practice with the Pomodoro rhythm.',
-    category: 'useful',
-    pinned: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString()
-  }
-];
-
-let notesState = loadNotes();
-let activeNoteFilter = 'all';
-
-function loadNotes() {
-  try {
-    const saved = localStorage.getItem(noteStorageKey);
-    return saved ? JSON.parse(saved) : [...defaultNotes];
-  } catch (error) {
-    console.warn('Could not load notes:', error);
-    return [...defaultNotes];
-  }
-}
-
-function saveNotes() {
-  localStorage.setItem(noteStorageKey, JSON.stringify(notesState));
-}
-
-function loadScratchpad() {
-  if (!scratchpadInput) return;
-  scratchpadInput.value = localStorage.getItem(scratchpadStorageKey) || '';
-}
-
-function saveScratchpad() {
-  if (!scratchpadInput) return;
-  localStorage.setItem(scratchpadStorageKey, scratchpadInput.value);
-}
-
-function getFilteredNotes() {
-  return notesState.filter(note => {
-    if (activeNoteFilter === 'pinned') return note.pinned;
-    if (activeNoteFilter === 'useful') return note.category === 'useful';
-    if (activeNoteFilter === 'ideas') return note.category === 'ideas';
-    return true;
-  });
-}
-
-function formatCategoryLabel(category) {
-  const map = {
-    useful: '💡 Useful',
-    ideas: '✨ Ideas',
-    focus: '🧠 Focus',
-    review: '📚 Review'
-  };
-  return map[category] || '📝 Note';
-}
-
-function formatNoteDate(dateString) {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
-
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function renderNotes() {
-  if (!notesListElement) return;
-
-  const notes = getFilteredNotes();
-  notesListElement.innerHTML = '';
-
-  if (notes.length === 0) {
-    notesListElement.innerHTML = '<div class="note-empty">No notes found for this filter. Create one to see it here.</div>';
-    return;
-  }
-
-  notes.forEach((note, index) => {
-    const card = document.createElement('article');
-    card.className = 'note-card';
-    card.style.animationDelay = `${index * 60}ms`;
-    card.innerHTML = `
-      <div class="note-card-head">
-        <span class="note-category-chip">${formatCategoryLabel(note.category)}</span>
-        <button class="note-pin-btn ${note.pinned ? 'pinned' : ''}" data-action="pin" data-id="${note.id}" title="${note.pinned ? 'Unpin note' : 'Pin note'}">
-          ${note.pinned ? '★' : '☆'}
-        </button>
-      </div>
-      <h3>${escapeHtml(note.title)}</h3>
-      <p>${escapeHtml(note.content)}</p>
-      <div class="note-card-footer">
-        <span class="note-date">${formatNoteDate(note.createdAt)}</span>
-        <button class="note-delete-btn" data-action="delete" data-id="${note.id}">Delete</button>
-      </div>
-    `;
-
-    notesListElement.appendChild(card);
-  });
-}
-
-function updateNoteCounters() {
-  if (!noteCountLabel || !pinnedCountLabel || !ideaCountLabel) return;
-  const total = notesState.length;
-  const pinned = notesState.filter(note => note.pinned).length;
-  const ideas = notesState.filter(note => note.category === 'ideas').length;
-
-  noteCountLabel.textContent = total;
-  pinnedCountLabel.textContent = pinned;
-  ideaCountLabel.textContent = ideas;
-}
-
-function setNoteFilter(filter) {
-  activeNoteFilter = filter;
-  noteFilterButtons.forEach(button => {
-    button.classList.toggle('active', button.dataset.filter === filter);
-  });
-  if (activeFilterLabel) {
-    activeFilterLabel.textContent = filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1);
-  }
-  renderNotes();
-}
-
-function addNewNote() {
-  if (!noteTitleInput || !noteContentInput || !noteCategorySelect) return;
-  const title = noteTitleInput.value.trim();
-  const content = noteContentInput.value.trim();
-  const category = noteCategorySelect.value;
-
-  if (!title || !content) {
-    if (noteTitleInput) noteTitleInput.classList.add('input-warning');
-    if (noteContentInput) noteContentInput.classList.add('input-warning');
-    setTimeout(() => {
-      if (noteTitleInput) noteTitleInput.classList.remove('input-warning');
-      if (noteContentInput) noteContentInput.classList.remove('input-warning');
-    }, 500);
-    return;
-  }
-
-  const newNote = {
-    id: Date.now(),
-    title,
-    content,
-    category,
-    pinned: false,
-    createdAt: new Date().toISOString()
-  };
-
-  notesState.unshift(newNote);
-  saveNotes();
-  renderNotes();
-  updateNoteCounters();
-
-  noteForm.reset();
-  noteTitleInput.focus();
-}
-
-function clearNoteInputs() {
-  if (noteForm) noteForm.reset();
-  if (noteTitleInput) noteTitleInput.focus();
-}
-
-function handleNoteClick(event) {
-  const action = event.target.dataset.action;
-  const noteId = Number(event.target.dataset.id);
-  if (!action || !noteId) return;
-
-  if (action === 'pin') {
-    notesState = notesState.map(note => note.id === noteId ? { ...note, pinned: !note.pinned } : note);
-    saveNotes();
-    renderNotes();
-    updateNoteCounters();
-    return;
-  }
-
-  if (action === 'delete') {
-    notesState = notesState.filter(note => note.id !== noteId);
-    saveNotes();
-    renderNotes();
-    updateNoteCounters();
-    return;
-  }
-}
-
-function initNotesManager() {
-  if (!notesListElement) return;
-
-  loadScratchpad();
-  renderNotes();
-  updateNoteCounters();
-
-  if (noteForm) {
-    noteForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      addNewNote();
+    taskListElement.addEventListener("click", (e) => {
+      const target = e.target;
+      const checkboxId = target.dataset.taskId;
+      const deleteId = target.dataset.deleteId;
+      if (checkboxId) {
+        toggleTaskCompletion(checkboxId);
+      }
+      if (deleteId) {
+        removeTask(deleteId);
+      }
     });
   }
 
-  if (clearNoteBtn) {
-    clearNoteBtn.addEventListener('click', clearNoteInputs);
-  }
-
-  if (notesListElement) {
-    notesListElement.addEventListener('click', handleNoteClick);
-  }
-
-  noteFilterButtons.forEach(button => {
-    button.addEventListener('click', () => setNoteFilter(button.dataset.filter));
+  tasksFilterButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      tasksFilterButtons.forEach(item => item.classList.remove("active"));
+      btn.classList.add("active");
+      renderTasks(btn.dataset.filter || "all");
+    });
   });
 
-  if (scratchpadInput) {
-    scratchpadInput.addEventListener('input', saveScratchpad);
+  if (noteForm) {
+    noteForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      createNote();
+    });
   }
-}
 
-if (document.querySelector('.notes-section')) {
-  initNotesManager();
-}
+  if (notesList) {
+    notesList.addEventListener("click", (e) => {
+      handleNoteAction(e.target.closest("button"));
+    });
+  }
+
+  noteFilterButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      noteFilterButtons.forEach(item => item.classList.remove("active"));
+      btn.classList.add("active");
+      if (activeFilterLabel) activeFilterLabel.textContent = btn.textContent.trim();
+      renderNotes(btn.dataset.filter || "all");
+    });
+  });
+
+  if (clearNoteBtn) {
+    clearNoteBtn.addEventListener("click", () => {
+      if (noteForm) noteForm.reset();
+    });
+  }
+
+  if (scratchpadInput) {
+    scratchpadInput.value = localStorage.getItem(getStorageKey("scratchpad")) || "";
+    scratchpadInput.addEventListener("input", () => {
+      localStorage.setItem(getStorageKey("scratchpad"), scratchpadInput.value);
+    });
+  }
+
+  if (window.location.pathname.endsWith("tasks.html")) {
+    loadTasks();
+  }
+
+  if (window.location.pathname.endsWith("notes.html")) {
+    loadNotes();
+  }
+
+  if (window.location.pathname.endsWith("settings.html")) {
+    loadProfilePage();
+  }
+
+  if (window.location.pathname.endsWith("calendar.html")) {
+    ensureAuthenticated();
+  }
+
+  initializeAiSettings();
+  initializeHeroParallax();
+});
+
 
 function togglePasswordVisibility(inputElement, toggleButton) {
   if (!inputElement || !toggleButton) return;

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudyFlow</title>
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Commons-emblem-question_book_orange.svg/1280px-Commons-emblem-question_book_orange.svg.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
@@ -165,7 +165,20 @@
     </ul>
 
     <div class="nav-right">
-        <button class="logout-btn" id="logoutBtn">Log out</button>
+        <button class="profile-menu-trigger" id="userMenuBtn" aria-label="Open profile menu">⋯</button>
+        <div class="user-menu" id="userMenu">
+            <div class="user-menu-header">
+                <div class="user-menu-avatar" id="navUserInitials">AB</div>
+                <div class="user-menu-details">
+                    <p id="navUserName">Amina Brooks</p>
+                    <span id="navUserEmail">amina@studyflow.com</span>
+                </div>
+            </div>
+            <div class="user-menu-actions">
+                <button class="user-menu-item" id="goToSettings">Settings</button>
+                <button class="user-menu-item logout-menu-item" id="logoutBtn">Log out</button>
+            </div>
+        </div>
         <div class="menu-toggle" id="menuToggle">☰</div>
     </div>
 </nav>
@@ -176,7 +189,7 @@
     <div class="floating-shape"></div>
     <div class="hero-content">
         <div class="hero-tag">Welcome to StudyFlow</div>
-        <h1>Master Your Studies,<br>Boost Your Productivity</h1>
+        <h1>Master Your Studies, Boost Your Productivity</h1>
         <p>Manage tasks, stay focused, and study smarter with our AI-powered platform. Track progress, organize your workflow, and achieve academic excellence.</p>
     </div>
 </section>

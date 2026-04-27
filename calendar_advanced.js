@@ -4,7 +4,9 @@ class StudyCalendar {
         this.currentDate = new Date();
         this.selectedDate = new Date();
         this.currentView = 'month';
-        this.events = JSON.parse(localStorage.getItem('calendarEvents')) || {};
+        const currentUser = window.getCurrentUser ? window.getCurrentUser() : null;
+        this.eventStorageKey = currentUser ? `calendarEvents-${currentUser.email}` : 'calendarEvents';
+        this.events = JSON.parse(localStorage.getItem(this.eventStorageKey) || '{}');
         this.searchTimeout = null;
         this.reminders = [];
 
@@ -805,7 +807,7 @@ class StudyCalendar {
     }
 
     saveEvents() {
-        localStorage.setItem('calendarEvents', JSON.stringify(this.events));
+        localStorage.setItem(this.eventStorageKey, JSON.stringify(this.events));
     }
 
     formatDateKey(date) {
