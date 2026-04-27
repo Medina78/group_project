@@ -885,6 +885,261 @@ if (document.querySelector('.task-center-section')) {
   initTaskManager();
 }
 
+const noteStorageKey = 'studyflowNotes';
+const scratchpadStorageKey = 'studyflowScratchpad';
+const noteForm = document.getElementById('noteForm');
+const noteTitleInput = document.getElementById('noteTitle');
+const noteContentInput = document.getElementById('noteContent');
+const noteCategorySelect = document.getElementById('noteCategory');
+const notesListElement = document.getElementById('notesList');
+const noteFilterButtons = document.querySelectorAll('.note-filter-btn');
+const noteCountLabel = document.getElementById('noteCount');
+const pinnedCountLabel = document.getElementById('pinnedCount');
+const ideaCountLabel = document.getElementById('ideaCount');
+const activeFilterLabel = document.getElementById('activeFilterLabel');
+const clearNoteBtn = document.getElementById('clearNoteBtn');
+const scratchpadInput = document.getElementById('scratchpadInput');
+
+const defaultNotes = [
+  {
+    id: 1,
+    title: 'Exam summary checklist',
+    content: 'Highlight key formulas, create flashcard prompts, and mark the 3 concepts you must review tonight.',
+    category: 'review',
+    pinned: true,
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 2,
+    title: 'Group study agenda',
+    content: 'Set a topic for each teammate, add discussion questions, and list one follow-up resource per concept.',
+    category: 'ideas',
+    pinned: false,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
+  },
+  {
+    id: 3,
+    title: 'Write active recall prompts',
+    content: 'Turn definitions into questions, swap details for examples, and practice with the Pomodoro rhythm.',
+    category: 'useful',
+    pinned: false,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString()
+  }
+];
+
+let notesState = loadNotes();
+let activeNoteFilter = 'all';
+
+function loadNotes() {
+  try {
+    const saved = localStorage.getItem(noteStorageKey);
+    return saved ? JSON.parse(saved) : [...defaultNotes];
+  } catch (error) {
+    console.warn('Could not load notes:', error);
+    return [...defaultNotes];
+  }
+}
+
+function saveNotes() {
+  localStorage.setItem(noteStorageKey, JSON.stringify(notesState));
+}
+
+function loadScratchpad() {
+  if (!scratchpadInput) return;
+  scratchpadInput.value = localStorage.getItem(scratchpadStorageKey) || '';
+}
+
+function saveScratchpad() {
+  if (!scratchpadInput) return;
+  localStorage.setItem(scratchpadStorageKey, scratchpadInput.value);
+}
+
+function getFilteredNotes() {
+  return notesState.filter(note => {
+    if (activeNoteFilter === 'pinned') return note.pinned;
+    if (activeNoteFilter === 'useful') return note.category === 'useful';
+    if (activeNoteFilter === 'ideas') return note.category === 'ideas';
+    return true;
+  });
+}
+
+function formatCategoryLabel(category) {
+  const map = {
+    useful: '💡 Useful',
+    ideas: '✨ Ideas',
+    focus: '🧠 Focus',
+    review: '📚 Review'
+  };
+  return map[category] || '📝 Note';
+}
+
+function formatNoteDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function renderNotes() {
+  if (!notesListElement) return;
+
+  const notes = getFilteredNotes();
+  notesListElement.innerHTML = '';
+
+  if (notes.length === 0) {
+    notesListElement.innerHTML = '<div class="note-empty">No notes found for this filter. Create one to see it here.</div>';
+    return;
+  }
+
+  notes.forEach((note, index) => {
+    const card = document.createElement('article');
+    card.className = 'note-card';
+    card.style.animationDelay = `${index * 60}ms`;
+    card.innerHTML = `
+      <div class="note-card-head">
+        <span class="note-category-chip">${formatCategoryLabel(note.category)}</span>
+        <button class="note-pin-btn ${note.pinned ? 'pinned' : ''}" data-action="pin" data-id="${note.id}" title="${note.pinned ? 'Unpin note' : 'Pin note'}">
+          ${note.pinned ? '★' : '☆'}
+        </button>
+      </div>
+      <h3>${escapeHtml(note.title)}</h3>
+      <p>${escapeHtml(note.content)}</p>
+      <div class="note-card-footer">
+        <span class="note-date">${formatNoteDate(note.createdAt)}</span>
+        <button class="note-delete-btn" data-action="delete" data-id="${note.id}">Delete</button>
+      </div>
+    `;
+
+    notesListElement.appendChild(card);
+  });
+}
+
+function updateNoteCounters() {
+  if (!noteCountLabel || !pinnedCountLabel || !ideaCountLabel) return;
+  const total = notesState.length;
+  const pinned = notesState.filter(note => note.pinned).length;
+  const ideas = notesState.filter(note => note.category === 'ideas').length;
+
+  noteCountLabel.textContent = total;
+  pinnedCountLabel.textContent = pinned;
+  ideaCountLabel.textContent = ideas;
+}
+
+function setNoteFilter(filter) {
+  activeNoteFilter = filter;
+  noteFilterButtons.forEach(button => {
+    button.classList.toggle('active', button.dataset.filter === filter);
+  });
+  if (activeFilterLabel) {
+    activeFilterLabel.textContent = filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1);
+  }
+  renderNotes();
+}
+
+function addNewNote() {
+  if (!noteTitleInput || !noteContentInput || !noteCategorySelect) return;
+  const title = noteTitleInput.value.trim();
+  const content = noteContentInput.value.trim();
+  const category = noteCategorySelect.value;
+
+  if (!title || !content) {
+    if (noteTitleInput) noteTitleInput.classList.add('input-warning');
+    if (noteContentInput) noteContentInput.classList.add('input-warning');
+    setTimeout(() => {
+      if (noteTitleInput) noteTitleInput.classList.remove('input-warning');
+      if (noteContentInput) noteContentInput.classList.remove('input-warning');
+    }, 500);
+    return;
+  }
+
+  const newNote = {
+    id: Date.now(),
+    title,
+    content,
+    category,
+    pinned: false,
+    createdAt: new Date().toISOString()
+  };
+
+  notesState.unshift(newNote);
+  saveNotes();
+  renderNotes();
+  updateNoteCounters();
+
+  noteForm.reset();
+  noteTitleInput.focus();
+}
+
+function clearNoteInputs() {
+  if (noteForm) noteForm.reset();
+  if (noteTitleInput) noteTitleInput.focus();
+}
+
+function handleNoteClick(event) {
+  const action = event.target.dataset.action;
+  const noteId = Number(event.target.dataset.id);
+  if (!action || !noteId) return;
+
+  if (action === 'pin') {
+    notesState = notesState.map(note => note.id === noteId ? { ...note, pinned: !note.pinned } : note);
+    saveNotes();
+    renderNotes();
+    updateNoteCounters();
+    return;
+  }
+
+  if (action === 'delete') {
+    notesState = notesState.filter(note => note.id !== noteId);
+    saveNotes();
+    renderNotes();
+    updateNoteCounters();
+    return;
+  }
+}
+
+function initNotesManager() {
+  if (!notesListElement) return;
+
+  loadScratchpad();
+  renderNotes();
+  updateNoteCounters();
+
+  if (noteForm) {
+    noteForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      addNewNote();
+    });
+  }
+
+  if (clearNoteBtn) {
+    clearNoteBtn.addEventListener('click', clearNoteInputs);
+  }
+
+  if (notesListElement) {
+    notesListElement.addEventListener('click', handleNoteClick);
+  }
+
+  noteFilterButtons.forEach(button => {
+    button.addEventListener('click', () => setNoteFilter(button.dataset.filter));
+  });
+
+  if (scratchpadInput) {
+    scratchpadInput.addEventListener('input', saveScratchpad);
+  }
+}
+
+if (document.querySelector('.notes-section')) {
+  initNotesManager();
+}
+
 function togglePasswordVisibility(inputElement, toggleButton) {
   if (!inputElement || !toggleButton) return;
   

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow — Notes</title>
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Commons-emblem-question_book_orange.svg/1280px-Commons-emblem-question_book_orange.svg.png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">StudyFlow</div>
+    <ul class="nav-links">
+        <a href="index.html"><li>Dashboard</li></a>
+        <a href="tasks.html"><li>Tasks</li></a>
+        <a href="ai-assistant.html"><li>AI Assistant</li></a>
+        <a href="calendar.html"><li>Calendar</li></a>
+        <a href="notes.html"><li class="active">Notes</li></a>
+        <a href="settings.html"><li>Settings</li></a>
+    </ul>
+    <div class="nav-right">
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+        <div class="menu-toggle" id="menuToggle">☰</div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="floating-shape"></div>
+    <div class="floating-shape"></div>
+    <div class="floating-shape"></div>
+    <div class="hero-content">
+        <div class="hero-tag">Notes studio</div>
+        <h1>Turn ideas into study-ready notes</h1>
+        <p>Capture bright moments, pin important lessons, and keep your study notes animated with smart structure and style.</p>
+    </div>
+</section>
+
+<section class="notes-section">
+    <div class="notes-header">
+        <h2>Notebook workspace</h2>
+        <p>Write, pin, and filter your study notes inside a notebook-inspired layout with quick filters and a scratchpad.</p>
+    </div>
+
+    <div class="notes-toolbar">
+        <div class="note-filter-table">
+            <button class="note-filter-btn active" data-filter="all">All notes</button>
+            <button class="note-filter-btn" data-filter="pinned">Pinned</button>
+            <button class="note-filter-btn" data-filter="useful">Useful</button>
+            <button class="note-filter-btn" data-filter="ideas">Ideas</button>
+        </div>
+        <div class="note-summary-row">
+            <div class="summary-pill"><strong id="noteCount">0</strong> notes</div>
+            <div class="summary-pill"><strong id="pinnedCount">0</strong> pinned</div>
+            <div class="summary-pill"><strong id="ideaCount">0</strong> ideas</div>
+        </div>
+    </div>
+
+    <div class="notes-layout">
+        <div class="notebook-panel">
+            <div class="notebook-edge">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="notebook-page">
+                <div class="page-lines"></div>
+                <div class="note-form-box">
+                    <div class="form-heading">
+                        <div>
+                            <p class="subtle-label">Quick new note</p>
+                            <h3>Write it down</h3>
+                        </div>
+                        <div class="note-pill">Type: <strong id="activeFilterLabel">All</strong></div>
+                    </div>
+                    <form id="noteForm" class="note-form">
+                        <div class="form-row">
+                            <input type="text" id="noteTitle" placeholder="Note title" aria-label="Note title">
+                            <select id="noteCategory" aria-label="Note category">
+                                <option value="useful">Useful</option>
+                                <option value="ideas">Ideas</option>
+                                <option value="focus">Focus</option>
+                                <option value="review">Review</option>
+                            </select>
+                        </div>
+                        <textarea id="noteContent" class="note-textarea" rows="5" placeholder="Write your note here..."></textarea>
+                        <div class="note-form-footer">
+                            <button type="submit" class="card-button">Save note</button>
+                            <button type="button" class="card-button note-secondary" id="clearNoteBtn">Clear</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="notes-list" id="notesList"></div>
+            </div>
+        </div>
+
+        <aside class="note-side-panel">
+            <div class="insight-card scratchpad-card">
+                <div class="side-panel-header">
+                    <div>
+                        <p class="subtle-label">Notebook scratchpad</p>
+                        <h3>Write extra thoughts</h3>
+                    </div>
+                </div>
+                <textarea id="scratchpadInput" class="note-textarea scratchpad-input" placeholder="Capture extra study thoughts, reminders, or a quick brain dump..."></textarea>
+            </div>
+            <div class="insight-card small-card summary-card">
+                <h3>Note quick controls</h3>
+                <div class="note-chip-list">
+                    <div class="note-chip">⭐ Press pin to keep a note visible</div>
+                    <div class="note-chip">🔎 Use filters to surface important notes</div>
+                    <div class="note-chip">📝 Add notes without leaving the page</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <div class="footer-logo">
+                <h3>StudyFlow</h3>
+                <p>Master your studies, boost your productivity</p>
+            </div>
+            <div class="social-links">
+                <a href="#" class="social-link">📘</a>
+                <a href="#" class="social-link">🐦</a>
+                <a href="#" class="social-link">📧</a>
+                <a href="#" class="social-link">💼</a>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <h4>Features</h4>
+            <ul>
+                <li><a href="tasks.html">Task Management</a></li>
+                <li><a href="ai-assistant.html">AI Assistant</a></li>
+                <li><a href="calendar.html">Calendar</a></li>
+                <li><a href="notes.html">Notes</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4>Resources</h4>
+            <ul>
+                <li><a href="#">Study Tips</a></li>
+                <li><a href="#">Productivity Guide</a></li>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">API Docs</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4>Company</h4>
+            <ul>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section newsletter">
+            <h4>Stay Updated</h4>
+            <p>Get the latest study tips and features</p>
+            <div class="newsletter-form">
+                <input type="email" placeholder="Enter your email" class="newsletter-input">
+                <button class="newsletter-btn">Subscribe</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="footer-bottom-content">
+            <p>&copy; 2026 StudyFlow. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Terms of Service</a>
+                <span>•</span>
+                <a href="#">Privacy Policy</a>
+                <span>•</span>
+                <a href="#">Cookie Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
