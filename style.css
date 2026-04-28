@@ -1802,6 +1802,7 @@ body.dark-mode .security-card {
 
 .hero-content {
   position: relative;
+  left: 25%;
   z-index: 1;
   animation: fadeInUp 1.2s ease both;
   transform: translateZ(0);
@@ -6474,4 +6475,12 @@ cite {
   .footer-links {
     justify-content: center;
   }
+}
+
+.myVideo { 
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 3px dotted #ffd37f;
+  position: absolute;
+  bottom: 55%;
 }
