@@ -925,10 +925,10 @@ if (forgotPasswordForm) {
       return;
     }
     
-    const templateParams = {
-      to_email: email,
-      reset_link: "https://yourdomain.com/reset-password?email=" + encodeURIComponent(email) 
-    };
+  const templateParams = {
+    to_email: email,
+    reset_link: window.location.origin + "/reset-password.html?email=" + encodeURIComponent(email)
+  };
     
     emailjs.send('service_v67ylt8', 'template_g3wik17', templateParams)
       .then(function(response) {
