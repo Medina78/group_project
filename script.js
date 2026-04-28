@@ -75,6 +75,7 @@ const scratchpadInput = document.getElementById("scratchpadInput");
 const noteFilterButtons = document.querySelectorAll(".note-filter-btn");
 const activeFilterLabel = document.getElementById("activeFilterLabel");
 const clearNoteBtn = document.getElementById("clearNoteBtn");
+const ringFillElement = document.querySelector(".ring-fill");
 
 let currentUser = null;
 let tasks = [];
@@ -217,6 +218,10 @@ function updateUserMetrics() {
   if (document.getElementById("totalTaskCount")) document.getElementById("totalTaskCount").textContent = tasks.length.toString();
   const progress = tasks.length === 0 ? 0 : Math.round((completedCount / tasks.length) * 100);
   if (taskProgressValue) taskProgressValue.textContent = `${progress}%`;
+  if (ringFillElement) {
+    const degrees = Math.min(360, Math.max(0, Math.round((progress / 100) * 360)));
+    ringFillElement.style.background = `conic-gradient(#ff7e00 0deg, #ff7e00 ${degrees}deg, #f1f1f3 ${degrees}deg 360deg)`;
+  }
 }
 
 function loadTasks() {
@@ -237,10 +242,10 @@ function renderTasks(filter = "all") {
   });
   taskListElement.innerHTML = filtered.map(task => `
     <li class="task-item ${task.completed ? "completed" : ""}">
-      <div class="task-left">
-        <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.completed ? "checked" : ""}>
+      <label class="task-left">
+        <input type="checkbox" class="task-checkbox${task.completed ? " completed" : ""}" data-task-id="${task.id}" ${task.completed ? "checked" : ""}>
         <span class="task-title">${task.title}</span>
-      </div>
+      </label>
       <div class="task-actions">
         <button class="task-action-btn" title="Delete task" data-delete-id="${task.id}">🗑️</button>
       </div>
@@ -281,17 +286,23 @@ function saveNotes() {
 
 function renderNotes(filter = "all") {
   if (!notesList) return;
-  const filtered = notes.filter(note => {
+  let filtered = notes.filter(note => {
     if (filter === "pinned") return note.pinned;
     if (filter === "ideas") return note.category === "ideas";
     if (filter === "useful") return note.category === "useful";
     return true;
   });
+
+  filtered = filtered.slice().sort((a, b) => {
+    if (a.pinned === b.pinned) return new Date(b.createdAt) - new Date(a.createdAt);
+    return a.pinned ? -1 : 1;
+  });
+
   notesList.innerHTML = filtered.length === 0 ? `<div class="empty-notes">No notes yet. Add one to start your notebook.</div>` : filtered.map(note => `
     <div class="note-card ${note.pinned ? "pinned" : ""}" data-note-id="${note.id}">
       <div class="note-card-header">
         <h4>${note.title}</h4>
-        <button class="note-pin-btn" data-pin-id="${note.id}">📌</button>
+        <button class="note-pin-btn ${note.pinned ? "pinned" : ""}" data-pin-id="${note.id}" title="${note.pinned ? "Unpin note" : "Pin note"}">📌</button>
       </div>
       <p>${note.content}</p>
       <div class="note-card-footer">
@@ -317,6 +328,7 @@ function createNote() {
 }
 
 function handleNoteAction(target) {
+  if (!target) return;
   if (target.dataset.pinId) {
     const id = target.dataset.pinId;
     const note = notes.find(item => item.id === id);
@@ -1152,18 +1164,26 @@ window.addEventListener("DOMContentLoaded", () => {
       addTask(newTaskTitleInput.value.trim());
       newTaskTitleInput.value = "";
     });
+
+    newTaskTitleInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addTask(newTaskTitleInput.value.trim());
+        newTaskTitleInput.value = "";
+      }
+    });
   }
 
   if (taskListElement) {
     taskListElement.addEventListener("click", (e) => {
       const target = e.target;
-      const checkboxId = target.dataset.taskId;
-      const deleteId = target.dataset.deleteId;
-      if (checkboxId) {
-        toggleTaskCompletion(checkboxId);
+      const checkbox = target.closest("input[data-task-id]");
+      const deleteBtn = target.closest("button[data-delete-id]");
+      if (checkbox) {
+        toggleTaskCompletion(checkbox.dataset.taskId);
       }
-      if (deleteId) {
-        removeTask(deleteId);
+      if (deleteBtn) {
+        removeTask(deleteBtn.dataset.deleteId);
       }
     });
   }

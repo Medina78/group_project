@@ -2254,6 +2254,7 @@ body.dark-mode .security-card {
   transition: all 0.25s ease;
 }
 
+.task-checkbox:checked,
 .task-checkbox.completed {
   background: linear-gradient(135deg, #ff7e00, #ffbb64);
   border-color: transparent;
@@ -3186,6 +3187,17 @@ body.dark-mode .security-card {
   box-shadow: 0 30px 70px rgba(17, 48, 99, 0.16);
 }
 
+.note-card.pinned {
+  border-color: rgba(255, 126, 0, 0.35);
+  box-shadow: 0 30px 80px rgba(255, 154, 55, 0.18);
+}
+
+.note-pin-btn.pinned {
+  background: #ff7e00;
+  color: white;
+  box-shadow: 0 12px 24px rgba(255, 126, 0, 0.2);
+}
+
 .note-card-head {
   display: flex;
   align-items: center;
@@ -3435,12 +3447,6 @@ body.dark-mode .security-card {
   transition: all 0.3s ease;
   background: #fff;
   color: #333;
-}
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
 }
 
 .day-number.today {
