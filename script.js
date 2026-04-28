@@ -711,6 +711,15 @@ function initializeSettingsPage() {
   if (profileRole) {
     profileRole.textContent = user?.role || "Student";
   }
+  if (profileNameInput) {
+    profileNameInput.value = user?.name || "";
+  }
+  if (profileRoleInput) {
+    profileRoleInput.value = user?.role || "";
+  }
+  if (profileBioInput) {
+    profileBioInput.value = user?.bio || "";
+  }
   if (darkModeToggle) {
     darkModeToggle.checked = user?.settings?.theme === "dark";
   }
@@ -727,6 +736,9 @@ function saveAppSettings(event) {
   const user = currentUser || getCurrentUser();
   if (!user) return;
   user.settings = user.settings || {};
+  if (darkModeToggle) {
+    user.settings.theme = darkModeToggle.checked ? "dark" : "light";
+  }
   if (notificationToggle) {
     user.settings.notifications = notificationToggle.checked;
   }
@@ -740,20 +752,28 @@ function saveAppSettings(event) {
   showNotification("Your settings were saved successfully.");
 }
 
-function initializeHeroParallax() {
-  // Parallax effect handled by CSS background-attachment: fixed
-  // No additional JavaScript needed for the old design
-}
-
 if (darkModeToggle) {
   darkModeToggle.addEventListener("change", () => {
-    setTheme(darkModeToggle.checked ? "dark" : "light");
+    const theme = darkModeToggle.checked ? "dark" : "light";
+    setTheme(theme);
+    const user = currentUser || getCurrentUser();
+    if (user) {
+      user.settings = user.settings || {};
+      user.settings.theme = theme;
+      setCurrentUser(user);
+    }
   });
 }
 
 if (notificationToggle) {
   notificationToggle.addEventListener("change", () => {
     localStorage.setItem("studyflowNotifications", notificationToggle.checked);
+    const user = currentUser || getCurrentUser();
+    if (user) {
+      user.settings = user.settings || {};
+      user.settings.notifications = notificationToggle.checked;
+      setCurrentUser(user);
+    }
   });
 }
 
