@@ -358,7 +358,7 @@ body::before {
 }
 
 .modal-btn {
-  background: linear-gradient(135deg, #ff7e00 0%, #ffb64f 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
   color: white;
   box-shadow:
     0 4px 15px rgba(255, 126, 0, 0.3),
@@ -633,12 +633,11 @@ body::before {
   background: #f8fafc;
 }
 
-.profile-save-btn,
-.logout-card-btn {
+.profile-save-btn {
   width: 100%;
   margin-top: 18px;
   padding: 14px 0;
-  background: linear-gradient(135deg, var(--accent) 0%, #ffb64f 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
   color: white;
   border: none;
   border-radius: 16px;
@@ -647,7 +646,15 @@ body::before {
 }
 
 .logout-card-btn {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px 0;
   background: #111827;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .profile-save-btn:hover,
@@ -716,6 +723,10 @@ body::before {
 
 .task-action-btn:hover {
   background: rgba(255, 126, 0, 0.12);
+}
+
+body.dark-mode .task-action-btn:hover {
+  background: rgba(99, 114, 255, 0.14);
 }
 
 .filter-btn,
@@ -903,7 +914,7 @@ body::before {
 
 .login-btn {
   padding: 12px 24px;
-  background: linear-gradient(135deg, #ff7e00 0%, #ff9c3a 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -971,6 +982,7 @@ body::before {
   --text-primary: #1f2937;
   --text-secondary: #4b5563;
   --accent: #ff7e00;
+  --accent-light: #ffb64f;
   --accent-soft: rgba(255, 126, 0, 0.14);
   --card-shadow: 0 30px 80px rgba(21, 27, 38, 0.08);
 }
@@ -980,6 +992,54 @@ body.dark-mode {
     radial-gradient(circle at 80% 80%, rgba(255, 126, 0, 0.02) 0%, transparent 50%),
     linear-gradient(135deg, #090b17 0%, #101426 30%, #11141f 60%, #080a12 100%);
   color: #e9edf8;
+  --text-primary: #e9edf8;
+  --text-secondary: #cbd5e1;
+  --surface: rgba(12, 18, 34, 0.88);
+  --surface-strong: rgba(18, 26, 44, 0.98);
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6,
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode label,
+body.dark-mode a,
+body.dark-mode button,
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select,
+body.dark-mode .action-text,
+body.dark-mode .task-title,
+body.dark-mode .note-card p,
+body.dark-mode .note-card h4,
+body.dark-mode .profile-metric span,
+body.dark-mode .quick-action-btn,
+body.dark-mode .user-menu-item,
+body.dark-mode .modal-btn,
+body.dark-mode .modal-btn-secondary,
+body.dark-mode .newsletter-btn,
+body.dark-mode .save-settings-btn {
+  color: #e9edf8;
+}
+
+body.dark-mode a {
+  color: #93c5fd;
+}
+
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #e9edf8;
+}
+
+body.dark-mode ::placeholder {
+  color: rgba(233, 237, 248, 0.65);
 }
 
 body.dark-mode .navbar {
@@ -1034,6 +1094,140 @@ body.dark-mode .security-card {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
+body.dark-mode .login-box,
+body.dark-mode .modal-box,
+body.dark-mode .note-card,
+body.dark-mode .note-form input[type="text"],
+body.dark-mode .note-form textarea,
+body.dark-mode .note-form select,
+body.dark-mode .profile-form .form-group input,
+body.dark-mode .profile-form .form-group textarea,
+body.dark-mode .task-item,
+body.dark-mode .task-list,
+body.dark-mode .filter-btn,
+body.dark-mode .preset-btn,
+body.dark-mode .card-button,
+body.dark-mode .note-pin-btn,
+body.dark-mode .note-delete-btn,
+body.dark-mode .newsletter-input,
+body.dark-mode .newsletter-form,
+body.dark-mode .modal-btn-secondary,
+body.dark-mode .setting-row .switch input + .slider,
+body.dark-mode .settings-card,
+body.dark-mode .quick-links-card,
+body.dark-mode .security-card {
+  background: rgba(10, 16, 30, 0.94);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #e9edf8;
+}
+
+body.dark-mode .password-input-wrapper input[type="password"],
+body.dark-mode .password-input-wrapper input[type="text"] {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e9edf8;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-mode .profile-form .form-group input,
+body.dark-mode .profile-form .form-group textarea,
+body.dark-mode .note-form input[type="text"],
+body.dark-mode .note-form textarea,
+body.dark-mode .note-form select,
+body.dark-mode .newsletter-input {
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+  border-color: rgba(209, 213, 219, 0.6);
+}
+
+body.dark-mode .modal-box,
+body.dark-mode .note-card,
+body.dark-mode .task-item,
+body.dark-mode .card-button,
+body.dark-mode .settings-card,
+body.dark-mode .quick-links-card,
+body.dark-mode .security-card,
+body.dark-mode .login-box,
+body.dark-mode .note-category-chip,
+body.dark-mode .newsletter-form {
+  background: rgba(10, 16, 30, 0.94);
+  color: #e9edf8;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .filter-btn {
+  background: white;
+  color: #111;
+  border-color: rgba(209, 213, 219, 0.65);
+}
+
+body.dark-mode .filter-btn.active,
+body.dark-mode .filter-btn:hover {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  color: white;
+}
+
+body.dark-mode .preset-btn {
+  background: white;
+  color: var(--accent);
+  border-color: var(--accent-soft);
+}
+
+body.dark-mode .preset-btn.active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  color: white;
+}
+
+body.dark-mode .task-item {
+  background: rgba(10, 16, 30, 0.85);
+}
+
+body.dark-mode .task-action-btn:hover {
+  background: rgba(99, 114, 255, 0.14);
+}
+
+body.dark-mode .note-pin-btn,
+body.dark-mode .note-delete-btn {
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+}
+
+body.dark-mode .note-pin-btn:hover,
+body.dark-mode .note-delete-btn:hover,
+body.dark-mode .note-pin-btn.pinned {
+  background: var(--accent);
+  color: white;
+}
+
+body.dark-mode .modal-header h2,
+body.dark-mode .hero h1,
+body.dark-mode .hero p,
+body.dark-mode .hero-tag,
+body.dark-mode .settings-header h1,
+body.dark-mode .settings-header p,
+body.dark-mode .profile-card h3,
+body.dark-mode .profile-card p,
+body.dark-mode .setting-row label,
+body.dark-mode .setting-row span,
+body.dark-mode .settings-card h2,
+body.dark-mode .quick-links-card h3,
+body.dark-mode .security-card h3,
+body.dark-mode .footer a,
+body.dark-mode .footer p,
+body.dark-mode .footer h4,
+body.dark-mode .footer-links a,
+body.dark-mode .note-card h3,
+body.dark-mode .note-card p,
+body.dark-mode .task-title,
+body.dark-mode .note-category-chip,
+body.dark-mode .note-card-footer .note-date,
+body.dark-mode .newsletter-btn,
+body.dark-mode .card-button,
+body.dark-mode .modal-btn-secondary,
+body.dark-mode .chat-send-btn,
+body.dark-mode .save-api-btn {
+  color: #e9edf8;
+}
+
 .hero {
   position: relative;
   padding: 100px 24px 70px;
@@ -1042,6 +1236,16 @@ body.dark-mode .security-card {
   border-radius: 32px;
   box-shadow: var(--card-shadow);
   margin: 20px 24px;
+}
+
+body.dark-mode .hero {
+  background: rgba(12, 18, 34, 0.88) !important;
+}
+
+body.dark-mode .hero-tag,
+body.dark-mode .hero h1,
+body.dark-mode .hero p {
+  color: #e9edf8;
 }
 
 .parallax-background {
@@ -1554,7 +1758,7 @@ body.dark-mode .security-card {
 .chat-send-btn,
 .save-api-btn {
   padding: 16px 22px;
-  background: linear-gradient(135deg, #ff7e00 0%, #ff9c3a 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
   color: white;
   border: none;
   border-radius: 16px;
@@ -2174,7 +2378,7 @@ body.dark-mode .security-card {
 
 .filter-btn.active,
 .filter-btn:hover {
-  background: linear-gradient(135deg, #ff7e00, #ffbb64);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 12px 22px rgba(255, 126, 0, 0.18);
@@ -2540,7 +2744,7 @@ body.dark-mode .security-card {
   background: linear-gradient(135deg,
     rgba(255, 255, 255, 0.95) 0%,
     rgba(255, 250, 245, 0.9) 100%);
-  border: 2px solid rgba(255, 126, 0, 0.2);
+  border: 2px solid var(--accent-soft);
   border-radius: 20px;
   padding: 32px 24px;
   cursor: pointer;
@@ -2577,7 +2781,7 @@ body.dark-mode .security-card {
 
 .quick-action-btn:hover {
   transform: translateY(-8px) scale(1.02);
-  border-color: rgba(255, 126, 0, 0.4);
+  border-color: var(--accent-soft);
   box-shadow:
     0 20px 40px rgba(17, 48, 99, 0.15),
     0 10px 25px rgba(255, 126, 0, 0.12),
@@ -2651,9 +2855,9 @@ body.dark-mode .security-card {
 
 .card-button {
   background: linear-gradient(135deg,
-    #ff7e00 0%,
-    #ffb64f 50%,
-    #ff7e00 100%);
+    var(--accent) 0%,
+    var(--accent-light) 50%,
+    var(--accent) 100%);
   color: white;
   border: none;
   border-radius: 50px;
@@ -3222,7 +3426,7 @@ body.dark-mode .security-card {
 .note-delete-btn {
   border: none;
   background: rgba(255, 255, 255, 0.9);
-  color: #ff7e00;
+  color: var(--accent);
   font-size: 1rem;
   width: 44px;
   height: 44px;
@@ -3237,7 +3441,7 @@ body.dark-mode .security-card {
 .note-pin-btn:hover,
 .note-delete-btn:hover {
   transform: translateY(-2px);
-  background: #ff7e00;
+  background: var(--accent);
   color: white;
 }
 
@@ -5569,14 +5773,25 @@ cite {
 }
 
 .btn-primary {
-  background: #ff7e00;
+  background: var(--accent);
   color: white;
 }
 
 .btn-primary:hover {
-  background: #e66b00;
+  background: var(--accent-light);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 126, 0, 0.3);
+}
+
+.btn-secondary {
+  background: white;
+  color: #111;
+  border: 1px solid #e9ecef;
+}
+
+.btn-secondary:hover {
+  background: #f8f9fa;
+  color: #111;
 }
 
 .btn-secondary {
@@ -5701,9 +5916,9 @@ cite {
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s ease-out;
-  border: 2px solid rgba(255, 126, 0, 0.2);
-  background: rgba(255, 126, 0, 0.05);
-  color: #ff7e00;
+  border: 2px solid var(--accent-soft);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--accent);
   min-width: 50px;
   position: relative;
   overflow: hidden;
@@ -5737,9 +5952,9 @@ cite {
 }
 
 .preset-btn.active {
-  background: linear-gradient(135deg, #ff7e00 0%, #ffb64f 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
   color: white;
-  border-color: rgba(255, 126, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
   box-shadow:
     0 4px 15px rgba(255, 126, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -6360,14 +6575,14 @@ cite {
 
 .newsletter-input:focus {
   outline: none;
-  border-color: #ff7e00;
+  border-color: var(--accent);
   background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 0 3px rgba(255, 126, 0, 0.1);
 }
 
 .newsletter-btn {
   padding: 12px 20px;
-  background: linear-gradient(135deg, #ff7e00, #ffb64f);
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
   color: white;
   border: none;
   border-radius: 8px;

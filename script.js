@@ -39,6 +39,9 @@ const aiSendBtn = document.getElementById("aiSendBtn");
 
 const successNotification = document.getElementById("successNotification");
 const notificationMessage = document.getElementById("notificationMessage");
+const passwordToggle = document.getElementById("passwordToggle");
+const signupPasswordToggle = document.getElementById("signupPasswordToggle");
+const signupConfirmPasswordToggle = document.getElementById("signupConfirmPasswordToggle");
 
 const userMenuBtn = document.getElementById("userMenuBtn");
 const userMenu = document.getElementById("userMenu");
@@ -681,8 +684,23 @@ function setTheme(theme) {
 }
 
 function updateAccentColor(value) {
-  const color = value === "storm" ? "#6372ff" : value === "forest" ? "#34d399" : "#ff7e00";
-  document.documentElement.style.setProperty("--accent", color);
+  let accent = "#ff7e00";
+  let accentLight = "#ffb64f";
+  let accentSoft = "rgba(255, 126, 0, 0.14)";
+
+  if (value === "storm") {
+    accent = "#6372ff";
+    accentLight = "#8b9bff";
+    accentSoft = "rgba(99, 114, 255, 0.16)";
+  } else if (value === "forest") {
+    accent = "#34d399";
+    accentLight = "#7ee0b1";
+    accentSoft = "rgba(52, 211, 153, 0.16)";
+  }
+
+  document.documentElement.style.setProperty("--accent", accent);
+  document.documentElement.style.setProperty("--accent-light", accentLight);
+  document.documentElement.style.setProperty("--accent-soft", accentSoft);
   localStorage.setItem("studyflowAccent", value);
 }
 
@@ -738,6 +756,7 @@ function saveAppSettings(event) {
   user.settings = user.settings || {};
   if (darkModeToggle) {
     user.settings.theme = darkModeToggle.checked ? "dark" : "light";
+    setTheme(user.settings.theme);
   }
   if (notificationToggle) {
     user.settings.notifications = notificationToggle.checked;
@@ -1399,7 +1418,10 @@ class StudyTimer {
     this.presetBtns.forEach(btn => {
       btn.classList.remove('active');
     });
-    document.querySelector('[data-time="25"]').classList.add('active');
+    const activeBtn = document.querySelector('[data-time="25"]');
+    if (activeBtn) {
+      activeBtn.classList.add('active');
+    }
   }
   
   complete() {
@@ -1457,4 +1479,7 @@ class StudyTimer {
   }
 }
 
-const studyTimer = new StudyTimer();
+const timerDisplay = document.getElementById('timerDisplay');
+if (timerDisplay) {
+  const studyTimer = new StudyTimer();
+}
